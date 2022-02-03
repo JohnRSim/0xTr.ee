@@ -63,6 +63,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"svelte-dnd-action": "^0.9.14"
+		"svelte-dnd-action": "^0.9.14",
+		"dialog-polyfill": "^0.5.6"
 	}
 }
