@@ -15,10 +15,10 @@
 <footer class="footer-container">
   <div>
     Created by <a
-      aria-label="The IMR Experience"
-      href="https://nfthack2022.netlify.app/"
+      aria-label="0xtree"
+      href="https://0xtree.netlify.app/"
       target="_blank"
-      rel="noopener noreferrer">IMR Experience Team</a
+      rel="noopener noreferrer">0xtree</a
     >. Copyright {COPYRIGHT_ENTITY} 2022.
   </div>
   <nav class="footer-icons">
