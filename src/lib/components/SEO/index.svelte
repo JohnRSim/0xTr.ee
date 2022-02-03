@@ -36,6 +36,8 @@
   export let slug;
   export let timeToRead = 0;
   export let title;
+  export let cardType = 'modelviewer';
+  export let playerURL;
 
   const defaultAlt =
     'picture of a person with long, curly hair, wearing a red had taking a picture with an analogue camera';
@@ -105,6 +107,10 @@
     twitterUsername,
     image: twitterImage,
     timeToRead,
+    cardType,
+    metadescription,
+    playerURL,
+    url,
   };
 </script>
 
