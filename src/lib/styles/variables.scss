@@ -39,7 +39,7 @@ $spacing-32: 8rem;
 $font-family-serif: 'Source Sans Pro', 'Lustria', 'Noto Serif', 'Merriweather', 'Georgia', 'Cambria',
   'Times New Roman', 'Times', serif;
 $font-body: $font-family-serif;
-$font-heading: 'Lora', $font-family-serif;
+$font-heading: $font-family-serif;
 
 // Font Weight
 // check imported weights and styles in gatsby-browser.jsx

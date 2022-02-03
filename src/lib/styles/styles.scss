@@ -4,6 +4,18 @@
 @import './variables.scss';
 
 /* HTML elements */
+
+* {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: transparent;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	outline:none;
+}
+
 *,
 :after,
 :before {
@@ -111,8 +123,8 @@ li p {
 
 ul li,
 ol li {
-  padding-left: $spacing-0;
-  margin-bottom: math.div($spacing-8, 2);
+  /*padding-left: $spacing-0;
+  margin-bottom: math.div($spacing-8, 2);*/
 }
 
 li > p {
