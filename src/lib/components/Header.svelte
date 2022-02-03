@@ -2,9 +2,6 @@
 </script>
 
 <header class="header-container">
-  <a aria-label="Jump to Home page" class="hover-jump" href="./">
-    <img width="160" src="/logo.png" alt="THE IMR Experience" />
-  </a>
   <nav class="nav">
     <ul>
       <li><a href="/.">Home</a></li>
