@@ -1,6 +1,9 @@
 # 0xtree (Road to Web3)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ee43faaa-79f5-4f70-829c-96595b225330/deploy-status)](https://app.netlify.com/sites/0xtree/deploys)
 
+Polygon Contracts for this build can be found here<br />
+https://github.com/JohnRSim/0xtr.ee-Contracts
+
 # Introducing 0xTree
 0xTree connects your social accounts to your NFT wallet enabling friends and collectors to browse, bid and buy your NFT’s without releasing custody.
 
