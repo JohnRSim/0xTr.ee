@@ -133,6 +133,19 @@
 		margin: 15px 0px 10px;
 		color: #383c3a;
 	}
+	.activity b {
+		font-size: 0.875em;
+	}
+
+	.hr {
+		background: #f9fafc;
+		border-radius: 50px;
+		height: 4px;
+		margin: 6px 0px;
+	}
+	hr {
+		display: none;
+	}
 </style>
 
 <section style="transform: translate3d(0px, 0px, 0px);" id="XT-NFT" class="scrollable gpu_acc">
@@ -174,13 +187,23 @@
 				hasTabs="{hasTabs}"
 				activeTab="{tab}" />
 
-			<div style="width:100%;">
+			<div style="width:100%; padding:0px 20px;">
 				{#if tab === 'Offers'}
 					Offers
 				{:else if tab === 'History'}
 					History
 				{:else if tab === 'Activity'}
-					{#each activity as active}a{/each}
+					<div class="activity">
+						<div class="hr"><hr /></div>
+						{#each activity as active}
+							{#if active.from_address === active.to_address}
+								<b>Sent the token same wallet id</b>
+							{:else}
+								<b>{active.from_address}</b> -> <b>{active.to_address}</b>
+							{/if}
+							<div class="hr"><hr /></div>
+						{/each}
+					</div>
 				{/if}
 			</div>
 		</article>

@@ -485,7 +485,21 @@
 						</dl>
 					</div>
 				{:else if tab === 'Settings'}
-					<div>WIP</div>
+					<div>
+						<h4>Selected Chain:</h4>
+						<select>
+							<option value="polygon">Polgyon Mainet</option>
+							<option selected value="mumbai">Mumbai Test Network</option>
+							<option value="ethereum">Ethereum Mainet</option>
+							<option value="rinkeby">Rinkeby Test Network</option>
+						</select>
+					</div>
+					<div>
+						<h4>Display:</h4>
+						Tokens<br />
+						NFTs<br />
+						Links<br />
+					</div>
 				{/if}
 			</article>
 		</div>

@@ -109,6 +109,36 @@
 	h2 > span {
 		color: #737675;
 	}
+	.priceField {
+		border: solid 2px #eaeaea;
+		border-radius: 100px;
+		margin: 0px 20px 10px;
+		overflow: hidden;
+	}
+	.priceField,
+	.priceField label {
+		display: flex;
+		align-items: center;
+	}
+	.priceField label {
+		border-right: solid 2px #eaeaea;
+		padding-right: 10px;
+	}
+
+	.priceField label > div {
+		display: flex;
+		align-items: center;
+	}
+	.priceField input {
+		border: 0px;
+		flex: 1;
+		line-height: 40px;
+		text-indent: 10px;
+	}
+
+	.priceField label img {
+		margin: 0px 8px 0px 10px;
+	}
 </style>
 
 <SEO {...seoProps} />
@@ -123,12 +153,36 @@
 					<span>Road to Web3</span>
 				</h2>
 				<p>
+					<b>Designed for mobile only current..</b>
+				</p>
+				<p>
 					This entry is based off the <a target="_blank" href="https://www.linktr.ee">linktr.ee</a> web2
 					application and our attempt to show a dApp taking latest web3 concepts with wallets to provide
 					a NFT gateway to allow users to show off and sell and their NFTs in a social environment -
 					whilst getting stats on the audience accessing their assets.
 				</p>
 			</div>
+			<form>
+				<div class="priceField">
+					<label for="priceField">
+						<div style="align-items:center;">
+							<img width="26" src="/img/ico_search.svg" alt="Search by wallet id" />
+						</div>
+						<div class="crypto">Search</div>
+					</label>
+					<input
+						on:keyup="{(e) => {
+							if (e.key === 'Enter') {
+								goto(`/${searchAddress}`);
+							}
+						}}"
+						id="priceField"
+						bind:value="{searchAddress}"
+						type="text"
+						placeholder="Enter Wallet ID" />
+				</div>
+			</form>
+			<br />
 			<div>
 				<Button
 					{...basic}
@@ -145,17 +199,6 @@
 					}}">Lookup Tree Address</Button>
 			</div>
 			<br />
-			<div>
-				Search Wallet
-				<input
-					bind:value="{searchAddress}"
-					type="text"
-					on:keyup="{(e) => {
-						if (e.key === 'Enter') {
-							goto(`/${searchAddress}`);
-						}
-					}}" />
-			</div>
 		</article>
 	</div>
 </section>
