@@ -1074,8 +1074,9 @@
 	async function makeOffer() {
 		console.log('[makeOffer]');
 
-		//const bigNumberPrice = activePrice * 1e18; // John we really need to use a big number library here BN.js or something like that
-		const bigNumberPrice = new BN('1e18').mul(activePrice);
+		const web3 = await Moralis.enableWeb3();
+		const ethers = Moralis.web3Library;
+		const bigNumberPrice = ethers.utils.parseEther(activePrice);
 
 		const options = {
 			chain: 'mumbai',
@@ -1089,9 +1090,7 @@
 			},
 		};
 
-		const ethers = await Moralis.enableWeb3();
 		const placeBid = await Moralis.executeFunction(options);
-
 		console.log('[placeBid]', placeBid);
 		closeWindow();
 	}
