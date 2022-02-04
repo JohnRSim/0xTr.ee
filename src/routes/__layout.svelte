@@ -1088,6 +1088,7 @@
 				_tokenId: '13881000456214464272594247052417607500385614301131248520949923275583315247105',
 				_price: bigNumberPrice,
 			},
+			msgValue: bigNumberPrice,
 		};
 
 		const placeBid = await Moralis.executeFunction(options);
