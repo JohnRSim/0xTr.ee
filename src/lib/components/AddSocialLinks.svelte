@@ -145,13 +145,13 @@
 		opacity: 1;
 	}
 	dialog {
-		left: 0px;
-		right: 0px;
+		left: 20px;
+		right: 20px;
 		top: 0px;
 		opacity: 0;
 		background: #fff;
 		width: auto;
-		border-radius: 16px 16px 0px 0px;
+		border-radius: 16px;
 		border: 0px;
 		transition: bottom 0.2s;
 		padding: 0px;
@@ -258,7 +258,6 @@
 	}
 
 	:global(dialog[open]) {
-		top: auto;
 		animation-name: showmodal;
 		animation-duration: 0.6s;
 		animation-delay: 0.1s;

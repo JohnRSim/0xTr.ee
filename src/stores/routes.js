@@ -31,6 +31,38 @@ const setup = {
 			inlineHeaderNav: true,
 			headerNavMaxHeight: 60,
 		},
+		'/login': {
+			scrollTarget: '#XT-login.scrollable',
+			scrollBody: '#XT-login',
+			displayNav: false,
+		},
+		'/*': {
+			scrollTarget: '#XT-wallet.scrollable',
+			scrollBody: '#XT-wallet',
+			displayNav: true,
+			headerNavTransparent: true,
+			showLeftPanel: true,
+			showRightPanel: true,
+			showBack: true,
+		},
+		'/edit': {
+			scrollTarget: '#XT-editProfile.scrollable',
+			scrollBody: '#XT-editProfile',
+			showBack: true,
+			pageTitle: 'Edit Profile',
+			rightSpacer: true,
+			inlineHeaderNav: true,
+			headerNavMaxHeight: 60,
+		},
+		'/nft/*': {
+			scrollTarget: '#XT-NFT.scrollable',
+			scrollBody: '#XT-NFT',
+			displayNav: true,
+			headerNavTransparent: true,
+			showLeftPanel: true,
+			showRightPanel: true,
+			showBack: true,
+		},
 	}
 };
 
