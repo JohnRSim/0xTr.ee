@@ -1074,18 +1074,23 @@
 	async function makeOffer() {
 		console.log('[makeOffer]');
 
+		const bigNumberPrice = activePrice * 1e18; // John we really need to use a big number library here BN.js or something like that
+
 		const options = {
 			chain: 'mumbai',
-			address: '0x094251c982cb00B1b1E1707D61553E304289D4D8', //tree contract
-			function_name: 'placeBid',
-			abi: ABI,
+			contractAddress: '0x094251c982cb00B1b1E1707D61553E304289D4D8', //tree contract
+			functionName: 'placeBid',
+			abi: ABI.abi,
 			params: {
 				_nftContract: '0x2953399124f0cbb46d2cbacd8a89cf0599974963',
 				_tokenId: '13881000456214464272594247052417607500385614301131248520949923275583315247105',
-				_price: activePrice,
+				_price: bigNumberPrice,
 			},
 		};
-		const placeBid = await Moralis.Web3API.native.runContractFunction(options);
+		
+		const ethers = await Moralis.enableWeb3();
+		const placeBid = await Moralis.executeFunction(options);
+		
 		console.log('[placeBid]', placeBid);
 		closeWindow();
 	}
