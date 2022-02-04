@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+
 	import { goto, invalidate, prefetch, prefetchRoutes } from '$app/navigation';
 
 	//card imgs
@@ -16,6 +18,24 @@
 	//conf
 	import website from '$lib/config/website';
 	import { basic } from '$lib/components/conf/Buttons.js';
+
+	/* Authentication code */
+	async function login() {
+		let user = Moralis.User.current();
+		if (!user) {
+			user = await Moralis.authenticate({ signingMessage: 'Log in using Moralis' })
+				.then(function (user) {
+					console.log('logged in user:', user);
+					console.log(user.get('ethAddress'));
+					goto(`/${user.attributes.ethAddress}`);
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		} else {
+			goto(`/${user.attributes.ethAddress}`);
+		}
+	}
 
 	const { author, siteUrl } = website;
 	basic.width = '400px';
@@ -183,7 +203,8 @@
 					<Button
 						{...basic}
 						on:click="{() => {
-							goto('/0x');
+							//goto('/0x');
+							login();
 						}}">Connect your wallet</Button>
 				</div>
 

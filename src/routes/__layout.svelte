@@ -150,6 +150,10 @@
 			socialModalButtons = $sSocialModal.buttons;
 		}, 50);
 	}
+
+	const serverUrl = 'https://lzf1jh5sx176.usemoralis.com:2053/server';
+	const appId = 'XmxLvKVKIGQZexV2bcx8583lGNlnpY5ksXjiQkM2';
+
 	/**
 	 * onMount
 	 * initial page setup
@@ -159,6 +163,9 @@
 
 		//page ready show DOM
 		isMounted = true;
+
+		//connect to moralis
+		Moralis.start({ serverUrl, appId });
 
 		//calc uiType
 		windowResize({
@@ -992,6 +999,14 @@
 	function closeSocialWindow() {
 		//showModal = 'false';
 		showSocialModal = 'false';
+	}
+	/**
+	 * logout
+	 */
+	async function logOut() {
+		await Moralis.User.logOut();
+		console.log('logged out');
+		goto('/login');
 	}
 
 	/*

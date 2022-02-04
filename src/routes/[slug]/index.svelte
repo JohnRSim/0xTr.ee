@@ -62,6 +62,7 @@
 	});*/
 
 	let tokenList = [];
+	let NFTs = [];
 
 	let claimedWallet = true;
 	let userAvatar =
@@ -71,8 +72,22 @@
 	let isMounted = false;
 	onMount(async () => {
 		isMounted = true;
+		tokenList = await Moralis.Web3API.account.getTokenBalances();
+		const grabNFTs = await Moralis.Web3API.account.getNFTs({ chain: 'mumbai' });
+
+		const hasNFTs = grabNFTs.result.filter((nft) => {
+			if (nft.metadata !== null) {
+				nft.metadata = JSON.parse(nft.metadata);
+			}
+			return nft.metadata !== null;
+		});
+
+		console.log('hasNFTs', hasNFTs);
+
+		console.log(tokenList);
+		console.log(grabNFTs);
+		NFTs = hasNFTs;
 	});
-	//alert(tab);
 </script>
 
 <style>
@@ -368,8 +383,24 @@
 					<div style="width:100%;">
 						{#if tab === 'Tokens'}
 							<div class="tokenList">
-								{#if tokenList.length > 0}
-									<dl>
+								{#if tokenList && tokenList.length > 0}
+									{#each tokenList as token}
+										<dl>
+											<dt>
+												<figure>
+													{#if token.logo}
+														<img width="20" src="{token.logo}" alt="{token.name}" />
+													{/if}
+													<figcaption>{token.symbol}</figcaption>
+												</figure>
+											</dt>
+											<dd>
+												{token.balance}<br />
+												{token.name}
+											</dd>
+										</dl>
+									{/each}
+									<!--<dl>
 										<dt>
 											<figure>
 												<img width="20" src="/img/ico_eth.svg" alt="Ethereum" />
@@ -445,7 +476,7 @@
 											1234567.234<br />
 											Matic
 										</dd>
-									</dl>
+									</dl>-->
 								{:else}
 									<img
 										style="margin-top:30px"
@@ -475,9 +506,25 @@
 							</div>
 						{:else if tab === 'NFTs'}
 							<ul class="grid">
+								{#if NFTs && NFTs.length > 0}
+									{#each NFTs as NFT}
+										{#if NFT.metadata}
+											<li
+												on:click="{() => {
+													goto(`/nft/${NFT.metadata.token_address}_${NFT.metadata.token_id}`);
+												}}">
+												<figure>
+													<img width="100%" src="{NFT.metadata.image}" alt="{NFT.metadata.name}" />
+													<figcaption>{NFT.metadata.name}</figcaption>
+												</figure>
+											</li>
+										{/if}
+									{/each}
+								{/if}
+								<!--
 								<li
 									on:click="{() => {
-										goto('/NFT/0x123');
+										goto('/nft/0x123');
 									}}">
 									<figure>
 										<img width="100%" src="/img/ico_eth.svg" alt="Ethereum" />
@@ -525,7 +572,7 @@
 										<img width="100%" src="/img/ico_eth.svg" alt="Ethereum" />
 										<figcaption>Test Token</figcaption>
 									</figure>
-								</li>
+								</li>-->
 								<li>
 									<figure
 										on:click="{() => {
