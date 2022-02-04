@@ -41,6 +41,9 @@
 	import Button from '$lib/components/Button.svelte';
 	import { bigBlue } from '$lib/components/conf/Buttons.js';
 
+	//stores
+	import { modal as sModal } from '../../stores/modal.js';
+
 	export let tab, slug;
 
 	let hasTabs = [
@@ -137,7 +140,23 @@
 					{/if}
 				</div>
 				<div style="display:flex;align-items:center;justif-content:center">
-					<Button {...bigBlue}>Make Offer</Button>
+					<Button
+						{...bigBlue}
+						on:click="{() => {
+							sModal.showModal({
+								enable: 'true',
+								title: 'Make an  Offer',
+								subHeader:
+									'By making an offer you will be sending funds into a holding area until offer has been accepted.',
+								tpl: 'price',
+								buttons: [
+									{
+										text: 'Make An Offer',
+										action: 'makeOffer',
+									},
+								],
+							});
+						}}">Make Offer</Button>
 				</div>
 				<br />
 			</header>

@@ -39,6 +39,9 @@
 	import { modal as sModal } from '../stores/modal.js';
 	import { socialModal as sSocialModal } from '../stores/socialModal.js';
 
+	//ABI
+	import ABI from '$lib/abi/tree.json';
+
 	//console styles
 	const Inf = 'background-color: #f8ffff; color: #276f86';
 
@@ -126,6 +129,9 @@
 	let socialModalTpl = '';
 	let socialModalHeader = '';
 	let socialModalButtons = [];
+
+	//bidding
+	let activePrice = 0;
 
 	//link tpl
 	let activeLinkTpl = '';
@@ -1061,6 +1067,28 @@
 		updateProfile.profileBGPic = img;
 		sUser.updateVal('profile', updateProfile);
 	}
+
+	/**
+	 * makeOffer
+	 */
+	async function makeOffer() {
+		console.log('[makeOffer]');
+
+		const options = {
+			chain: 'mumbai',
+			address: '0x094251c982cb00B1b1E1707D61553E304289D4D8', //tree contract
+			function_name: 'placeBid',
+			abi: ABI,
+			params: {
+				_nftContract: '0x2953399124f0cbb46d2cbacd8a89cf0599974963',
+				_tokenId: '13881000456214464272594247052417607500385614301131248520949923275583315247105',
+				_price: activePrice,
+			},
+		};
+		const placeBid = await Moralis.Web3API.native.runContractFunction(options);
+		console.log('[placeBid]', placeBid);
+		closeWindow();
+	}
 	/*
 	modalHeader = 'Choose Your Profile NFT';
 	modalContent = 'selectNFT';
@@ -1560,6 +1588,7 @@
 
 <ModalWindow
 	on:closeWindow="{closeWindow}"
+	on:makeOffer="{makeOffer}"
 	show="{showModal}"
 	header="{modalHeader}"
 	subHeader="{modalSubHeader}"
@@ -1575,7 +1604,7 @@
 				<div class="crypto">Matic</div>
 				<!--<div><span></span></div>-->
 			</label>
-			<input id="priceField" type="text" placeholder="Enter amount" />
+			<input bind:value="{activePrice}" id="priceField" type="text" placeholder="Enter amount" />
 		</div>
 	{/if}
 
