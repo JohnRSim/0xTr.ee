@@ -31,6 +31,7 @@
 	//stores
 	import { modal as sModal } from '../stores/modal.js';
 	import { socialModal as sSocialModal } from '../stores/socialModal.js';
+	import { user as sUser } from '../stores/user';
 
 	//components
 	import HeaderTabList from '$lib/components/HeaderTabList.svelte';
@@ -55,16 +56,24 @@
 	];
 
 	let claimedWallet = true;
-	let userAvatar =
-		'background-image:url("/assets/images/best-medium-format-camera-for-starting-out.jpg")';
-	userAvatar = '';
+	$: userAvatar = $sUser.profile.profilePic
+		? `background-image:url("${$sUser.profile.profilePic}")`
+		: '';
+	$: userBG = $sUser.profile.profileBGPic
+		? `background-image:url("${$sUser.profile.profileBGPic}"); background-size:cover;`
+		: '';
+
+	//userAvatar = '';
 
 	//profile info
-	let name = '';
-	let bio = '';
+	let name = $sUser.profile.name;
+	let bio = $sUser.profile.bio;
 
-	let socialLinks = [];
-
+	$: socialLinks = Object.entries($sUser.profile.socialLinks);
+	//Object.keys($sUser.profile.socialLinks).map((key) => [
+	//Number(key),
+	//$sUser.profile.socialLinks[key],
+	//]);
 	let isMounted = false;
 	onMount(async () => {
 		isMounted = true;
@@ -79,6 +88,13 @@
 		} else {
 			window.history.go(-1);
 		}
+	}
+
+	function save() {
+		let userProfile = $sUser.profile;
+		userProfile.name = name;
+		userProfile.bio = bio;
+		sUser.updateVal('profile', userProfile);
 	}
 </script>
 
@@ -211,7 +227,7 @@
 	.floatingLinks li {
 		list-style: none;
 		margin-left: 4px;
-		width: 40px;
+		width: 30px;
 		height: 40px;
 		display: flex;
 		align-items: center;
@@ -220,6 +236,7 @@
 	.floatingLinks li.update {
 		border: solid 4px #f5f7f5;
 		border-radius: 100px;
+		width: 40px;
 		background: #fff;
 		background-image: url('/img/ico_plus.svg ');
 		background-size: 16px;
@@ -317,12 +334,13 @@
 				{#if tab === 'Profile'}
 					<header class:claimed="{claimedWallet}">
 						<div
+							style="{userBG}"
 							class="profileBG"
 							on:click="{() => {
 								sModal.showModal({
 									enable: 'true',
 									title: 'Choose Your Header NFT',
-									tpl: 'selectNFT',
+									tpl: 'selectBGNFT',
 									notch: true,
 									hasShadow: true,
 									subHeader: 'This NFT will be displayed as your header picture.',
@@ -356,12 +374,23 @@
 								<div class="nftAvatar" style="{userAvatar}"></div>
 							</div>
 						</div>
-						<div class="walletID">0x1Eb05E2Ab2e838EB2c5ce9AEfb66068313FFED7F</div>
+						<div class="walletID">
+							{$sUser.ethAddress ? $sUser.ethAddress : 'Unknown'}
+						</div>
 						<div class="profileInfo">
 							{#if socialLinks && socialLinks.length > 0}
 								<ul class="floatingLinks">
-									{#each socialLinks as link}
-										<li>{link.name}</li>
+									{#each socialLinks as [site, url], i}
+										{#if url}
+											<li>
+												<a target="_blank" href="{url}">
+													<img
+														style="display:block;"
+														width="26"
+														src="/img/ico_{site}.svg"
+														alt="{site}" /></a>
+											</li>
+										{/if}
 									{/each}
 									<li
 										class="update"
@@ -427,6 +456,7 @@
 							<button
 								class="save"
 								on:click="{() => {
+									save();
 									goBack();
 								}}">Save your profile</button>
 						</div>

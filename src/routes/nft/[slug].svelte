@@ -38,6 +38,8 @@
 
 	//components
 	import HeaderTabList from '$lib/components/HeaderTabList.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import { bigBlue } from '$lib/components/conf/Buttons.js';
 
 	export let tab, slug;
 
@@ -55,6 +57,22 @@
 			path: `/nft/${slug}?tab=Activity`,
 		},
 	];
+	$: nftMeta = {};
+	$: nftImage = nftMeta.image ? `background-image:url("${nftMeta.image}")` : '';
+	//$: nftImage =
+	//typeof nftImage.image !== 'undefined' ? `background-image:url("${nftImage.image}")` : '';
+
+	onMount(async () => {
+		const addressArr = slug.split('_');
+		console.log(addressArr);
+		const options = { address: addressArr[0], token_id: addressArr[1], chain: 'mumbai' };
+		//const metaData = await Moralis.Web3API.token.getNFTMetadata(options);
+		//const tokenMetadata = await Moralis.Web3API.token.getTokenMetadata(options);
+		const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+		console.log('-------------', tokenIdMetadata);
+		nftMeta = JSON.parse(tokenIdMetadata.metadata);
+		console.log(nftMeta);
+	});
 </script>
 
 <style lang="scss">
@@ -85,11 +103,44 @@
 		text-align: left;
 		align-items: center;
 	}
+	header {
+		width: 100%;
+		position: relative;
+		z-index: 10;
+	}
+	.profileBG {
+		background: #fff;
+		min-height: 160px;
+		position: relative;
+		width: 100%;
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+	.infoPanel {
+		padding: 0px 20px;
+	}
+	.infoPanel h4 {
+		margin: 15px 0px 10px;
+		color: #383c3a;
+	}
 </style>
 
-<section style="transform: translate3d(0px, 60px, 0px);" id="XT-NFT" class="scrollable gpu_acc">
+<section style="transform: translate3d(0px, 0px, 0px);" id="XT-NFT" class="scrollable gpu_acc">
 	<div style="flex:1;display:flex;flex-direction:column;">
 		<article style="flex:1;" dir="auto">
+			<header>
+				<div class="profileBG" style="{nftImage}"></div>
+				<div class="infoPanel">
+					{#if nftMeta.name}
+						<h4>{nftMeta.name}</h4>
+						<p>{nftMeta.description}</p>
+					{/if}
+				</div>
+				<div style="display:flex;align-items:center;justif-content:center">
+					<Button {...bigBlue}>Make Offer</Button>
+				</div>
+				<br />
+			</header>
 			<HeaderTabList
 				on:tab="{(e) => {
 					goto(e.detail.path, { replaceState: true, noscroll: true });

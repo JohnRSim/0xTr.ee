@@ -8,6 +8,21 @@ const appConfig = { instance: 'DEV' }
  */
 const setup = {
 	disablePanelScroll: false,
+	userInfo: {},
+	ethAddress: '',
+	ft: [],
+	nft: [],
+	profile: {
+		name: '',
+		bio: '',
+		profilePic: '',
+		profileBGPic: '',
+		socialLinks: {
+			twitter: '',
+			youTube: '',
+			instagram: '',
+		}
+	}
 };
 
 /**

@@ -42,8 +42,16 @@
 
 	//stores
 	import { modal as sModal } from '../../stores/modal.js';
+	import { user as sUser } from '../../stores/user';
 
 	export let tab, slug;
+
+	$: userAccount = false;
+
+	//user authed
+	$: if ($sUser.ethAddress.length > 0 && slug === $sUser.ethAddress) {
+		userAccount = true;
+	}
 
 	let hasTabs = [
 		{
@@ -61,8 +69,19 @@
 		path: `/${slug}?tab=Links`,
 	});*/
 
-	let tokenList = [];
-	let NFTs = [];
+	$: userAvatar =
+		$sUser.profile.profilePic && userAccount
+			? `background-image:url("${$sUser.profile.profilePic}")`
+			: '';
+
+	$: userBG =
+		$sUser.profile.profileBGPic && userAccount
+			? `background-image:url("${$sUser.profile.profileBGPic}"); background-size:cover;`
+			: '';
+
+	$: tokenList = userAccount ? $sUser.ft : [];
+	$: NFTs = userAccount ? $sUser.nft : [];
+	$: socialLinks = userAccount ? Object.entries($sUser.profile.socialLinks) : [];
 
 	let claimedWallet = true;
 	let userAvatar =
@@ -71,9 +90,19 @@
 
 	let isMounted = false;
 	onMount(async () => {
+		console.log($sUser);
 		isMounted = true;
-		tokenList = await Moralis.Web3API.account.getTokenBalances();
-		const grabNFTs = await Moralis.Web3API.account.getNFTs({ chain: 'mumbai' });
+		let grabNFTs = {};
+		if (userAccount) {
+			tokenList = await Moralis.Web3API.account.getTokenBalances({ chain: 'mumbai' });
+			grabNFTs = await Moralis.Web3API.account.getNFTs({ chain: 'mumbai' });
+		} else {
+			tokenList = await Moralis.Web3API.account.getTokenBalances({
+				chain: 'mumbai',
+				address: slug,
+			});
+			grabNFTs = await Moralis.Web3API.account.getNFTs({ chain: 'mumbai', address: slug });
+		}
 
 		const hasNFTs = grabNFTs.result.filter((nft) => {
 			if (nft.metadata !== null) {
@@ -83,10 +112,15 @@
 		});
 
 		console.log('hasNFTs', hasNFTs);
-
 		console.log(tokenList);
 		console.log(grabNFTs);
-		NFTs = hasNFTs;
+
+		if (userAccount) {
+			sUser.updateVal('ft', tokenList);
+			sUser.updateVal('nft', hasNFTs);
+		} else {
+			NFTs = hasNFTs;
+		}
 	});
 </script>
 
@@ -316,7 +350,7 @@
 		display: inline-block;
 	}
 	.claimed .claimWallet {
-		display: none;
+		/*display: none;*/
 	}
 	.claimWallet {
 		position: absolute;
@@ -348,6 +382,49 @@
 		color: #5a566a;
 		font-size: 0.8em;
 	}
+	.updateNFTIco {
+		border-radius: 50%;
+		width: 30px;
+		height: 30px;
+		bottom: 3px;
+		right: -2px;
+		background: #ffffff;
+		border: solid 3px #f5f7f5;
+		position: absolute;
+		z-index: 10;
+		background-image: url('/img/ico_polygon1.svg');
+		background-size: 24px;
+		background-position: 0px;
+		background-repeat: no-repeat;
+	}
+
+	.floatingLinks {
+		position: absolute;
+		right: 20px;
+		top: 10px;
+		background: #fff;
+		display: flex;
+		margin: 0px;
+	}
+	.floatingLinks li {
+		list-style: none;
+		margin-left: 4px;
+		width: 30px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.floatingLinks li.update {
+		border: solid 4px #f5f7f5;
+		border-radius: 100px;
+		width: 40px;
+		background: #fff;
+		background-image: url('/img/ico_plus.svg ');
+		background-size: 16px;
+		background-repeat: no-repeat;
+		background-position: center;
+	}
 </style>
 
 {#if isMounted}
@@ -355,20 +432,47 @@
 		<div style="flex:1;display:flex;flex-direction:column;">
 			<article style="flex:1;" dir="auto">
 				<header class:claimed="{claimedWallet}">
-					<div class="profileBG">
-						<button
-							class="editProfile"
-							on:click="{() => {
-								goto(`/edit`);
-							}}">Edit Profile</button>
+					<div class="profileBG" style="{userBG}">
+						{#if userAccount}
+							<button
+								class="editProfile"
+								on:click="{() => {
+									goto(`/edit`);
+								}}">Edit Profile</button>
+						{/if}
 						<div class="nftAvatarWrapper">
+							<div class="updateNFTIco"></div>
 							<div class="nftAvatar" style="{userAvatar}"></div>
 						</div>
 					</div>
-					<div class="walletID">0x1Eb05E2Ab2e838EB2c5ce9AEfb66068313FFED7F</div>
+					<div class="walletID">
+						{userAccount ? $sUser.ethAddress : slug}
+					</div>
 					<div class="profileInfo">
-						<button class="claimWallet">Claim this Wallet</button>
-						<b>Anonymous Wallet</b>
+						{#if !userAccount}
+							<button class="claimWallet">Claim this Wallet</button>
+						{:else}
+							<ul class="floatingLinks">
+								{#each socialLinks as [site, url], i}
+									{#if url}
+										<li>
+											<a target="_blank" href="{url}">
+												<img
+													style="display:block;"
+													width="26"
+													src="/img/ico_{site}.svg"
+													alt="{site}" /></a>
+										</li>
+									{/if}
+								{/each}
+							</ul>
+						{/if}
+						<b>{$sUser.profile.name ? $sUser.profile.name : 'Anonymous Wallet'}</b>
+						{#if $sUser.profile.bio}
+							<p class="bio">
+								{$sUser.profile.bio}
+							</p>
+						{/if}
 					</div>
 				</header>
 
@@ -511,7 +615,7 @@
 										{#if NFT.metadata}
 											<li
 												on:click="{() => {
-													goto(`/nft/${NFT.metadata.token_address}_${NFT.metadata.token_id}`);
+													goto(`/nft/${NFT.token_address}_${NFT.token_id}`);
 												}}">
 												<figure>
 													<img width="100%" src="{NFT.metadata.image}" alt="{NFT.metadata.name}" />

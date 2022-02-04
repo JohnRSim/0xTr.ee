@@ -19,6 +19,9 @@
 	import website from '$lib/config/website';
 	import { basic } from '$lib/components/conf/Buttons.js';
 
+	//stores
+	import { user as sUser } from '../stores/user';
+
 	/* Authentication code */
 	async function login() {
 		let user = Moralis.User.current();
@@ -27,12 +30,16 @@
 				.then(function (user) {
 					console.log('logged in user:', user);
 					console.log(user.get('ethAddress'));
+					sUser.updateVal('userInfo', user);
+					sUser.updateVal('ethAddress', user.attributes.ethAddress);
 					goto(`/${user.attributes.ethAddress}`);
 				})
 				.catch(function (error) {
 					console.log(error);
 				});
 		} else {
+			sUser.updateVal('userInfo', user);
+			sUser.updateVal('ethAddress', user.attributes.ethAddress);
 			goto(`/${user.attributes.ethAddress}`);
 		}
 	}

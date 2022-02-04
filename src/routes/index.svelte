@@ -17,6 +17,8 @@
 	import website from '$lib/config/website';
 	import { basic } from '$lib/components/conf/Buttons.js';
 
+	let searchAddress;
+
 	const { author, siteUrl } = website;
 
 	let title = 'Home';
@@ -133,6 +135,26 @@
 					on:click="{() => {
 						goto('/login');
 					}}">Try Me...</Button>
+			</div>
+			<br />
+			<div>
+				<Button
+					{...basic}
+					on:click="{() => {
+						goto('/0x123e710c69b6806ef32Cf52e49dCC5EEEc368a22');
+					}}">Lookup Tree Address</Button>
+			</div>
+			<br />
+			<div>
+				Search Wallet
+				<input
+					bind:value="{searchAddress}"
+					type="text"
+					on:keyup="{(e) => {
+						if (e.key === 'Enter') {
+							goto(`/${searchAddress}`);
+						}
+					}}" />
 			</div>
 		</article>
 	</div>

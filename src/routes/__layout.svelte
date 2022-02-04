@@ -132,6 +132,11 @@
 	//used for modal window input text fields
 	let keyboardShown = false;
 
+	//social links
+	let socialTwitterLink = $sUser.profile.socialLinks.twitter;
+	let socialYouTubeLink = $sUser.profile.socialLinks.youTube;
+	let socialInstagramLink = $sUser.profile.socialLinks.instagram;
+
 	$: if ($sModal && isMounted) {
 		setTimeout(() => {
 			showModal = $sModal.enable;
@@ -187,6 +192,7 @@
 
 			//remove active scrollTarget to new item
 			if (scrollTarget && typeof scrollTarget !== 'string') {
+				scrollTarget.scrollTo(0, 0);
 				scrollTarget.removeEventListener('scroll', verticalScroll);
 				scrollTarget = null;
 			}
@@ -198,6 +204,12 @@
 				document.body.classList.remove('scroll-up');
 				document.body.classList.add($sHistory.active.headerDisplay);
 			}
+
+			//tmp to review
+			//document.body.classList.remove('scroll-down');
+			//document.body.classList.remove('scroll-up');
+			//document.body.classList.remove('endScroll');
+			//document.body.classList.remove('shadow');
 
 			//reset val
 			sUser.updateVal('disablePanelScroll', false);
@@ -299,7 +311,13 @@
 			if (scrollTarget) {
 				console.log('add eve');
 				scrollTarget.addEventListener('scroll', verticalScroll);
+				scrollTarget.scrollTo(0, 0);
 			}
+			setTimeout(() => {
+				document.body.classList.remove('shadow');
+				document.body.classList.remove('scroll-down');
+				document.body.classList.add('scroll-up');
+			}, 100);
 		}
 	});
 
@@ -1009,6 +1027,40 @@
 		goto('/login');
 	}
 
+	/**
+	 * saveSocialLinks
+	 */
+	function saveSocialLinks() {
+		console.log('adding links');
+		let updateLinks = $sUser.profile;
+		updateLinks.socialLinks = {
+			twitter: socialTwitterLink,
+			youTube: socialYouTubeLink,
+			instagram: socialInstagramLink,
+		};
+		sUser.updateVal('profile', updateLinks);
+		closeSocialWindow();
+	}
+
+	/**
+	 * addToProfile
+	 */
+	function addToProfile(img) {
+		console.log('adding profile img');
+		let updateProfile = $sUser.profile;
+		updateProfile.profilePic = img;
+		sUser.updateVal('profile', updateProfile);
+	}
+
+	/**
+	 * addToBGProfile
+	 */
+	function addToBGProfile(img) {
+		console.log('adding bg profile img');
+		let updateProfile = $sUser.profile;
+		updateProfile.profileBGPic = img;
+		sUser.updateVal('profile', updateProfile);
+	}
 	/*
 	modalHeader = 'Choose Your Profile NFT';
 	modalContent = 'selectNFT';
@@ -1346,7 +1398,7 @@
 <!-- Modal Overlays -->
 <AddSocialLinks
 	on:closeWindow="{closeSocialWindow}"
-	on:saveSocialLinks="{closeSocialWindow}"
+	on:saveSocialLinks="{saveSocialLinks}"
 	on:addLink="{() => {
 		closeSocialWindow();
 	}}"
@@ -1369,7 +1421,7 @@
 					<img width="26" src="/img/ico_twitter.svg" alt="Matic" />
 				</div>
 				<div>
-					<input id="twitter" placeholder="Twitter" />
+					<input bind:value="{socialTwitterLink}" id="twitter" placeholder="Twitter" />
 				</div>
 			</label>
 
@@ -1377,14 +1429,16 @@
 				<div style="display:flex; padding:10px;align-items:center;">
 					<img width="26" src="/img/ico_youtube.svg" alt="Matic" />
 				</div>
-				<div><input id="YouTube" placeholder="YouTube" /></div>
+				<div><input bind:value="{socialYouTubeLink}" id="YouTube" placeholder="YouTube" /></div>
 			</label>
 
 			<label for="instagram">
 				<div style="display:flex; padding:10px;align-items:center;">
 					<img width="26" src="/img/ico_instagram.svg" alt="Instagram" />
 				</div>
-				<div><input id="instagram" placeholder="Instagram" /></div>
+				<div>
+					<input bind:value="{socialInstagramLink}" id="instagram" placeholder="Instagram" />
+				</div>
 			</label>
 		</form>
 	{/if}
@@ -1552,9 +1606,28 @@
 		</div>
 	{/if}
 
-	{#if modalTpl === 'selectNFT'}
+	{#if modalTpl === 'selectNFT' || modalTpl === 'selectBGNFT'}
 		<ul class="grid">
-			<li class="active">
+			{#if $sUser.nft && $sUser.nft.length > 0}
+				{#each $sUser.nft as NFT}
+					{#if NFT.metadata}
+						<li
+							on:click="{() => {
+								if (modalTpl === 'selectNFT') {
+									addToProfile(NFT.metadata.image);
+								} else {
+									addToBGProfile(NFT.metadata.image);
+								}
+							}}">
+							<figure>
+								<img width="100%" src="{NFT.metadata.image}" alt="{NFT.metadata.name}" />
+								<figcaption>{NFT.metadata.name}</figcaption>
+							</figure>
+						</li>
+					{/if}
+				{/each}
+			{/if}
+			<!--<li class="active">
 				<figure>
 					<img width="100%" src="/img/ico_eth.svg" alt="Ethereum" />
 					<figcaption>Test Token</figcaption>
@@ -1577,7 +1650,7 @@
 					<img width="100%" src="/img/ico_eth.svg" alt="Ethereum" />
 					<figcaption>Test Token</figcaption>
 				</figure>
-			</li>
+			</li>-->
 		</ul>
 	{/if}
 </ModalWindow>
