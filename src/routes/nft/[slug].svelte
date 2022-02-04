@@ -62,6 +62,7 @@
 	];
 	$: nftMeta = {};
 	$: nftImage = nftMeta.image ? `background-image:url("${nftMeta.image}")` : '';
+	$: activity = [];
 	//$: nftImage =
 	//typeof nftImage.image !== 'undefined' ? `background-image:url("${nftImage.image}")` : '';
 
@@ -75,6 +76,12 @@
 		console.log('-------------', tokenIdMetadata);
 		nftMeta = JSON.parse(tokenIdMetadata.metadata);
 		console.log(nftMeta);
+
+		const getWalletTokenIdTransfers = await Moralis.Web3API.token.getWalletTokenIdTransfers(
+			options,
+		);
+		console.log('getWalletTokenIdTransfers', getWalletTokenIdTransfers);
+		activity = getWalletTokenIdTransfers.result;
 	});
 </script>
 
@@ -173,7 +180,7 @@
 				{:else if tab === 'History'}
 					History
 				{:else if tab === 'Activity'}
-					Activity
+					{#each activity as active}a{/each}
 				{/if}
 			</div>
 		</article>
