@@ -1128,8 +1128,12 @@
 			},
 		};
 
-		const acceptBid = await Moralis.executeFunction(options);
-		console.log('[acceptBid]', placeBid);
+		console.log(options);
+		const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum, "any");
+		const signer = metamaskProvider.getSigner();
+		//const acceptBid = await Moralis.executeFunction(options);
+		const tree = new ethers.Contract(options.contractAddress, options.abi, metamaskProvider);
+		const acceptBid = await tree.connect(signer).acceptBid(options.params._nftContract, options.params._tokenId, options.params._price,{ gasLimit: 5000000 });
 		closeWindow();
 		sBidding.updateVal('waitingTransaction', $sBidding.tokenId);
 		await acceptBid.wait();
