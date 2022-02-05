@@ -115,8 +115,9 @@
 	const addressArr = slug.split('_');
 
 	onMount(async () => {
-		await Moralis.enableWeb3();
-
+		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+			await Moralis.enableWeb3();
+		}
 		console.log(addressArr);
 		sBidding.updateVal('nftContract', addressArr[0]);
 		sBidding.updateVal('tokenId', addressArr[1]);

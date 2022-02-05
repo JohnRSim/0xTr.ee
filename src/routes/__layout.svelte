@@ -180,7 +180,9 @@
 
 		//connect to moralis
 		await Moralis.start({ serverUrl, appId });
-		await Moralis.enableWeb3();
+		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+			await Moralis.enableWeb3();
+		}
 
 		/*Moralis.settings.setAPIRateLimit({
 			anonymous: 50,

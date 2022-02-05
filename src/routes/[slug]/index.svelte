@@ -117,6 +117,10 @@
 
 	onMount(async () => {
 		console.log('[onMount][wallet]');
+		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+			await Moralis.enableWeb3();
+		}
+
 		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
 		if (userAccount) {
 			tokenList = $sUser.ft;
