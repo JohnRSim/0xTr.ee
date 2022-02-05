@@ -163,7 +163,7 @@
 					whilst getting stats on the audience accessing their assets.
 				</p>
 			</div>
-			<form>
+			<form on:submit|preventDefault>
 				<div class="priceField">
 					<label for="priceField">
 						<div style="align-items:center;">
