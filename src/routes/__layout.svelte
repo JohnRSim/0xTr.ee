@@ -1136,7 +1136,7 @@
 		const tree = new ethers.Contract($sBidding.treeContract, ABI.abi, metamaskProvider);
 		const nft = new ethers.Contract($sBidding.nftContract, NFTABI.abi, metamaskProvider);
 		// Approve Spend
-		const approvalTX = await nft.connect(signer).approve($sBidding.treeContract, $sBidding.tokenId);
+		const approvalTX = await nft.connect(signer).approve($sBidding.treeContract, $sBidding.tokenId,{ gasLimit: 5000000 });
 		await approvalTX.wait();
 		// Accept Bid
 		const acceptBid = await tree.connect(signer).acceptBid($sBidding.nftContract, $sBidding.tokenId, bigNumberPrice.toString(),{ gasLimit: 5000000 });
