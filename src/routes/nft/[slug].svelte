@@ -255,26 +255,31 @@
 	 * shareLink
 	 */
 	function shareLink() {
-		if (navigator.share) {
-			navigator
-				.share({
-					title: nftMeta.name,
-					url: window.location.href,
-				})
-				.then(() => {
-					console.log('Thanks for sharing!');
-				})
-				.catch(console.error);
+		if (
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ||
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.platform)
+		) {
+			// ...
+			if (navigator.share) {
+				navigator
+					.share({
+						title: nftMeta.name,
+						url: window.location.href,
+					})
+					.then(() => {
+						console.log('Thanks for sharing!');
+					})
+					.catch(console.error);
+			} else {
+				window.open(
+					`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree&related=0xtree`,
+				);
+			}
 		} else {
-			shareDialog.classList.add('is-open');
+			window.open(
+				`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree&related=0xtree`,
+			);
 		}
-	}
-
-	/**
-	 * closeShare
-	 */
-	function closeShare() {
-		shareDialog.classList.remove('is-open');
 	}
 </script>
 
@@ -379,7 +384,7 @@
 		bottom: -20px;
 		z-index: 10;
 		right: 20px;
-		background: #f5f7f5;
+		background: #fff; /*#f5f7f5;*/
 		border-radius: 50%;
 		background-image: url('/img/ico_share.svg');
 		background-repeat: no-repeat;
