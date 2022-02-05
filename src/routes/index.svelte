@@ -69,6 +69,7 @@
 		ogImage,
 		ogSquareImage,
 		twitterImage,
+		playerURL: 'https://www.0xtr.ee/nft/player?contract=123&wallet=123',
 	};
 </script>
 
