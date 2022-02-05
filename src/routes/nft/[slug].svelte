@@ -115,7 +115,7 @@
 	const addressArr = slug.split('_');
 
 	onMount(async () => {
-		Moralis.enableWeb3();
+		await Moralis.enableWeb3();
 
 		console.log(addressArr);
 		sBidding.updateVal('nftContract', addressArr[0]);
