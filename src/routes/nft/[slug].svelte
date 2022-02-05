@@ -36,6 +36,18 @@
 	// svelte
 	import { onDestroy, onMount } from 'svelte';
 
+	//card imgs
+	import ogSquareImageSrc from '$lib/assets/home/home-open-graph-square.jpg';
+	import ogImageSrc from '$lib/assets/home/home-open-graph.jpg';
+	import twitterImageSrc from '$lib/assets/home/home-twitter.jpg';
+	import featuredImageSrc from '$lib/assets/home/home.jpg';
+
+	//img
+	import SEO from '$lib/components/SEO/index.svelte';
+
+	//conf
+	import website from '$lib/config/website';
+
 	//ABI
 	import ABI from '$lib/abi/tree.json';
 
@@ -281,6 +293,59 @@
 			);
 		}
 	}
+
+	const { author, siteUrl } = website;
+
+	let title = 'Home';
+	const breadcrumbs = [
+		{
+			name: 'Home',
+			slug: '',
+		},
+	];
+
+	let metadescription = '';
+	const featuredImageAlt = '';
+	const featuredImage = {
+		url: featuredImageSrc,
+		alt: featuredImageAlt,
+		width: 672,
+		height: 448,
+		caption: 'Home page',
+	};
+	const ogImage = {
+		url: ogImageSrc,
+		alt: featuredImageAlt,
+	};
+	const ogSquareImage = {
+		url: ogSquareImageSrc,
+		alt: featuredImageAlt,
+	};
+
+	const twitterImage = {
+		url: twitterImageSrc,
+		alt: featuredImageAlt,
+	};
+	const entityMeta = {
+		url: `${siteUrl}/`,
+		faviconWidth: 512,
+		faviconHeight: 512,
+		caption: author,
+	};
+	const seoProps = {
+		title,
+		slug: '',
+		entityMeta,
+		datePublished: '2022-01-04T14:19:33.000+0100',
+		lastUpdated: '2022-01-04T14:19:33.000+0100',
+		breadcrumbs,
+		metadescription,
+		featuredImage,
+		ogImage,
+		ogSquareImage,
+		twitterImage,
+		playerURL: `https://www.0xtr.ee/player/nft?contract=${$sBidding.nftContract}&wallet=${$sBidding.tokenId}`,
+	};
 </script>
 
 <style lang="scss">
@@ -393,6 +458,8 @@
 		border: solid 2px #eaeaea;
 	}
 </style>
+
+<SEO {...seoProps} />
 
 <section style="transform: translate3d(0px, 0px, 0px);" id="XT-NFT" class="scrollable gpu_acc">
 	<div style="flex:1;display:flex;flex-direction:column;">

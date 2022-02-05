@@ -179,7 +179,8 @@
 		isMounted = true;
 
 		//connect to moralis
-		Moralis.start({ serverUrl, appId });
+		await Moralis.start({ serverUrl, appId });
+		await Moralis.enableWeb3();
 
 		/*Moralis.settings.setAPIRateLimit({
 			anonymous: 50,
@@ -1132,7 +1133,7 @@
 
 		//const acceptBid = await Moralis.executeFunction(options);
 
-		const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum, "any");
+		const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum, 'any');
 		const signer = metamaskProvider.getSigner();
 		const tree = new ethers.Contract($sBidding.treeContract, ABI.abi, metamaskProvider);
 
@@ -1140,16 +1141,24 @@
 		const erc721 = new ethers.Contract($sBidding.nftContract, ERC721ABI.abi, metamaskProvider);
 		const standard = await erc721.connect(signer).supportsInterface('0x80ac58cd');
 		if (standard == true) {
-			const approvalTX = await erc721.connect(signer).approve($sBidding.treeContract, $sBidding.tokenId,{ gasLimit: 5000000 });
+			const approvalTX = await erc721
+				.connect(signer)
+				.approve($sBidding.treeContract, $sBidding.tokenId, { gasLimit: 5000000 });
 			await approvalTX.wait();
 		} else {
 			const erc1155 = new ethers.Contract($sBidding.nftContract, ERC1155ABI.abi, metamaskProvider);
-			const approvalTX = await erc1155.connect(signer).setApprovalForAll($sBidding.treeContract, true,{ gasLimit: 5000000 });
+			const approvalTX = await erc1155
+				.connect(signer)
+				.setApprovalForAll($sBidding.treeContract, true, { gasLimit: 5000000 });
 			await approvalTX.wait();
 		}
 
 		// Accept Bid
-		const acceptBid = await tree.connect(signer).acceptBid($sBidding.nftContract, $sBidding.tokenId, bigNumberPrice.toString(),{ gasLimit: 5000000 });
+		const acceptBid = await tree
+			.connect(signer)
+			.acceptBid($sBidding.nftContract, $sBidding.tokenId, bigNumberPrice.toString(), {
+				gasLimit: 5000000,
+			});
 		closeWindow();
 		sBidding.updateVal('waitingTransaction', $sBidding.tokenId);
 		await acceptBid.wait();
