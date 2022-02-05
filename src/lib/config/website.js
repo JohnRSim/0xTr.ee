@@ -7,7 +7,7 @@ const website = {
 	siteLanguage: 'en-GB',
 	siteTitle: 'Road To Web3 0xtree',
 	siteShortTitle: 'R2W',
-	siteUrl: import.meta.env ? import.meta.env.VITE_SITE_URL : '',
+	siteUrl: 'https://www.0xtr.ee/',//import.meta.env ? import.meta.env.VITE_SITE_URL : '',
 	icon: 'static/icon.png',
 	backgroundColor: '#1b4079',
 	themeColor: '#d62828',
