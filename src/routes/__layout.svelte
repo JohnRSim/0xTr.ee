@@ -225,7 +225,7 @@
 			//document.body.classList.remove('scroll-down');
 			//document.body.classList.remove('scroll-up');
 			//document.body.classList.remove('endScroll');
-			//document.body.classList.remove('shadow');
+			document.body.classList.remove('shadow');
 
 			//reset val
 			sUser.updateVal('disablePanelScroll', false);

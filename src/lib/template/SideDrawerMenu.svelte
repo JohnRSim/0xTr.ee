@@ -15,6 +15,7 @@
 
 	//bind
 	let drawerMenu;
+	let searchAddress;
 
 	onMount(() => {
 		isMounted = true;
@@ -81,6 +82,36 @@
 	.autoTransition {
 		transition: transform 0.3s, opacity 0.3s;
 	}
+	.priceField {
+		border: solid 2px #eaeaea;
+		border-radius: 100px;
+		overflow: hidden;
+	}
+	.priceField,
+	.priceField label {
+		display: flex;
+		align-items: center;
+	}
+	.priceField label {
+		border-right: solid 2px #eaeaea;
+		padding-right: 10px;
+	}
+
+	.priceField label > div {
+		display: flex;
+		align-items: center;
+	}
+	.priceField input {
+		border: 0px;
+		flex: 1;
+		line-height: 40px;
+		text-indent: 10px;
+		width: 150px;
+	}
+
+	.priceField label img {
+		margin: 0px 8px 0px 10px;
+	}
 </style>
 
 {#if isMounted}
@@ -94,7 +125,28 @@
 		<!-- Nav PanelWrapper -->
 		<div id="S-navPanel">
 			<!-- Header -->
-			<header class="main" on:click="{() => {}}"></header>
+			<header class="main" on:click="{() => {}}">
+				<form on:submit|preventDefault>
+					<div class="priceField">
+						<label for="priceField">
+							<div style="align-items:center;">
+								<img width="26" src="/img/ico_search.svg" alt="Search by wallet id" />
+							</div>
+							<div class="crypto">Search</div>
+						</label>
+						<input
+							on:keyup="{(e) => {
+								if (e.key === 'Enter') {
+									dispatchEvent({ action: 'nav', path: `/${searchAddress}` });
+								}
+							}}"
+							id="priceField"
+							bind:value="{searchAddress}"
+							type="text"
+							placeholder="Enter Wallet ID" />
+					</div>
+				</form>
+			</header>
 			<!-- xHeader -->
 
 			<!-- Nav -->
