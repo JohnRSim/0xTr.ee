@@ -42,7 +42,8 @@
 
 	//ABI
 	import ABI from '$lib/abi/tree.json';
-	import NFTABI from '$lib/abi/nft.json';
+	import ERC721ABI from '$lib/abi/erc721.json';
+	import ERC1155ABI from '$lib/abi/erc1155.json';
 
 	//console styles
 	const Inf = 'background-color: #f8ffff; color: #276f86';
@@ -1134,10 +1135,19 @@
 		const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum, "any");
 		const signer = metamaskProvider.getSigner();
 		const tree = new ethers.Contract($sBidding.treeContract, ABI.abi, metamaskProvider);
-		const nft = new ethers.Contract($sBidding.nftContract, NFTABI.abi, metamaskProvider);
+
 		// Approve Spend
-		const approvalTX = await nft.connect(signer).approve($sBidding.treeContract, $sBidding.tokenId,{ gasLimit: 5000000 });
-		await approvalTX.wait();
+		const erc721 = new ethers.Contract($sBidding.nftContract, ERC721ABI.abi, metamaskProvider);
+		const standard = await erc721.connect(signer).supportsInterface('0x80ac58cd');
+		if (standard) {
+			const approvalTX = await erc721.connect(signer).approve($sBidding.treeContract, $sBidding.tokenId,{ gasLimit: 5000000 });
+			await approvalTX.wait();
+		} else {
+			const erc1155 = new ethers.Contract($sBidding.nftContract, ERC1155ABI.abi, metamaskProvider);
+			const approvalTX = await nft.connect(signer).setApprovalForAll($sBidding.treeContract, true,{ gasLimit: 5000000 });
+			await approvalTX.wait();
+		}
+
 		// Accept Bid
 		const acceptBid = await tree.connect(signer).acceptBid($sBidding.nftContract, $sBidding.tokenId, bigNumberPrice.toString(),{ gasLimit: 5000000 });
 		closeWindow();
