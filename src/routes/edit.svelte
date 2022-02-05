@@ -32,6 +32,11 @@
 	import { modal as sModal } from '../stores/modal.js';
 	import { socialModal as sSocialModal } from '../stores/socialModal.js';
 	import { user as sUser } from '../stores/user';
+	import { app as sApp } from '../stores/app.js';
+	import { route as sRoute } from '../stores/routes.js';
+	import { history as sHistory } from '../stores/history.js';
+	import { bidding as sBidding } from '../stores/bidding.js';
+	import { wallet as sWallet } from '../stores/wallet.js';
 
 	//components
 	import HeaderTabList from '$lib/components/HeaderTabList.svelte';
@@ -95,6 +100,47 @@
 		userProfile.name = name;
 		userProfile.bio = bio;
 		sUser.updateVal('profile', userProfile);
+	}
+
+	/**
+	 * deleteAllCookies
+	 **/
+	function deleteAllCookies() {
+		const cookies = document.cookie.split(';');
+
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i];
+			const eqPos = cookie.indexOf('=');
+			const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+			document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+		}
+	}
+
+	/**
+	 * reset
+	 */
+	function reset() {
+		localStorage.clear();
+		sessionStorage.clear();
+		deleteAllCookies();
+		caches.keys().then(function (keyList) {
+			return Promise.all(
+				keyList.map(function (key) {
+					//if (cachesToKeep.indexOf(key) === -1) {
+					return caches.delete(key);
+					//}
+				}),
+			);
+		});
+		sModal.reset();
+		sSocialModal.reset();
+		sUser.reset();
+		sApp.reset();
+		sRoute.reset();
+		sHistory.reset();
+		sBidding.reset();
+		sWallet.reset();
+		window.location = '/';
 	}
 </script>
 
@@ -499,6 +545,9 @@
 						Tokens<br />
 						NFTs<br />
 						Links<br />
+					</div>
+					<div>
+						<button class="save" on:click="{reset}">Reset</button>
 					</div>
 				{/if}
 			</article>

@@ -71,9 +71,13 @@ function manageWallet() {
 		 */
 		reset: () => {
 			if (browser) {
-				localStorage.setItem(`${appConfig.instance}_wallet`, setup);
+				localStorage.setItem(`${appConfig.instance}_wallet`, {
+					id: {}
+				});
 			}
-			return set(setup);
+			return set({
+				id: {}
+			});
 		},
 	};
 }

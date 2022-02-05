@@ -88,9 +88,43 @@ function manageUser() {
 		 */
 		reset: () => {
 			if (browser) {
-				localStorage.setItem(`${appConfig.instance}_user`, setup);
+				localStorage.setItem(`${appConfig.instance}_user`, {
+					disablePanelScroll: false,
+					userInfo: {},
+					ethAddress: '',
+					ft: [],
+					nft: [],
+					profile: {
+						name: '',
+						bio: '',
+						profilePic: '',
+						profileBGPic: '',
+						socialLinks: {
+							twitter: '',
+							youTube: '',
+							instagram: '',
+						}
+					}
+				});
 			}
-			return set(setup);
+			return set({
+				disablePanelScroll: false,
+				userInfo: {},
+				ethAddress: '',
+				ft: [],
+				nft: [],
+				profile: {
+					name: '',
+					bio: '',
+					profilePic: '',
+					profileBGPic: '',
+					socialLinks: {
+						twitter: '',
+						youTube: '',
+						instagram: '',
+					}
+				}
+			});
 		},
 	};
 }
