@@ -1144,7 +1144,7 @@
 			await approvalTX.wait();
 		} else {
 			const erc1155 = new ethers.Contract($sBidding.nftContract, ERC1155ABI.abi, metamaskProvider);
-			const approvalTX = await nft.connect(signer).setApprovalForAll($sBidding.treeContract, true,{ gasLimit: 5000000 });
+			const approvalTX = await erc1155.connect(signer).setApprovalForAll($sBidding.treeContract, true,{ gasLimit: 5000000 });
 			await approvalTX.wait();
 		}
 
