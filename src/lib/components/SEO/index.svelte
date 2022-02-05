@@ -36,7 +36,7 @@
 	export let slug;
 	export let timeToRead = 0;
 	export let title;
-	export let cardType = 'modelviewer';
+	export let cardType = 'player';
 	export let playerURL;
 
 	const defaultAlt =
