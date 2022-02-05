@@ -1139,7 +1139,7 @@
 		// Approve Spend
 		const erc721 = new ethers.Contract($sBidding.nftContract, ERC721ABI.abi, metamaskProvider);
 		const standard = await erc721.connect(signer).supportsInterface('0x80ac58cd');
-		if (standard) {
+		if (standard == true) {
 			const approvalTX = await erc721.connect(signer).approve($sBidding.treeContract, $sBidding.tokenId,{ gasLimit: 5000000 });
 			await approvalTX.wait();
 		} else {
