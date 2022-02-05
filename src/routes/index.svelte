@@ -69,6 +69,7 @@
 		ogImage,
 		ogSquareImage,
 		twitterImage,
+		playerURL: 'https://www.0xtr.ee/player/nft?contract=123&wallet=123',
 	};
 </script>
 
@@ -162,7 +163,7 @@
 					whilst getting stats on the audience accessing their assets.
 				</p>
 			</div>
-			<form>
+			<form on:submit|preventDefault>
 				<div class="priceField">
 					<label for="priceField">
 						<div style="align-items:center;">
