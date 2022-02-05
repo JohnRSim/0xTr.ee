@@ -111,6 +111,7 @@
 	let bidLoading = true;
 	let lastestBidderID = '';
 	let loadingTxt = '';
+	let web3Browser = false;
 	$: latestBid = false;
 	const addressArr = slug.split('_');
 
@@ -136,7 +137,12 @@
 		console.log('getWalletTokenIdTransfers', getWalletTokenIdTransfers);
 		activity = getWalletTokenIdTransfers.result;
 
-		getLatestBid();
+		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+			web3Browser = true;
+			getLatestBid();
+		} else {
+			web3Browser = false;
+		}
 	});
 
 	/**
@@ -476,73 +482,77 @@
 						<p>{nftMeta.description}</p>
 					{/if}
 				</div>
-				<div class="latestBid" class:bidLoaded="{latestBid}">
-					<div><div class="loader"></div></div>
+				{#if web3Browser}
+					<div class="latestBid" class:bidLoaded="{latestBid}">
+						<div><div class="loader"></div></div>
 
-					<div class="txt">
-						{#if latestBid}
-							<b>Latest Bid</b>: {latestBid}
-						{:else}
-							{loadingTxt} Latest Bid
-						{/if}
+						<div class="txt">
+							{#if latestBid}
+								<b>Latest Bid</b>: {latestBid}
+							{:else}
+								{loadingTxt} Latest Bid
+							{/if}
+						</div>
 					</div>
-				</div>
-				{#if showBiddingOptions}
-					<div style="display:flex;align-items:center;justif-content:center">
-						{#if owner}
-							{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
-								{#if latestBid > 0}
+					{#if showBiddingOptions}
+						<div style="display:flex;align-items:center;justif-content:center">
+							{#if owner}
+								{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
+									{#if latestBid > 0}
+										<Button
+											{...bigBlue}
+											on:click="{() => {
+												sModal.showModal({
+													enable: 'true',
+													title: 'Accept Offer',
+													subHeader:
+														'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
+													tpl: 'recievedOffer',
+													buttons: [
+														{
+															text: 'Accept Offer',
+															action: 'acceptOffer',
+														},
+													],
+												});
+											}}">
+											Accept Offer</Button>
+										<Button {...bigBlue} on:click="{rejectLatestBid}">Decline Offer</Button>
+									{/if}
+								{:else}
 									<Button
 										{...bigBlue}
 										on:click="{() => {
+											//updatingBid = true;
 											sModal.showModal({
 												enable: 'true',
-												title: 'Accept Offer',
+												title: 'Make an  Offer',
 												subHeader:
-													'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
-												tpl: 'recievedOffer',
+													'By making an offer you will be sending funds into a holding area until offer has been accepted.',
+												tpl: 'price',
 												buttons: [
 													{
-														text: 'Accept Offer',
-														action: 'acceptOffer',
+														text: 'Make An Offer',
+														action: 'makeOffer',
 													},
 												],
 											});
 										}}">
-										Accept Offer</Button>
-									<Button {...bigBlue} on:click="{rejectLatestBid}">Decline Offer</Button>
-								{/if}
-							{:else}
-								<Button
-									{...bigBlue}
-									on:click="{() => {
-										//updatingBid = true;
-										sModal.showModal({
-											enable: 'true',
-											title: 'Make an  Offer',
-											subHeader:
-												'By making an offer you will be sending funds into a holding area until offer has been accepted.',
-											tpl: 'price',
-											buttons: [
-												{
-													text: 'Make An Offer',
-													action: 'makeOffer',
-												},
-											],
-										});
-									}}">
-									{#if latestBid > 0}
-										Increase Offer
-									{:else}
-										Make an Offer
-									{/if}</Button>
+										{#if latestBid > 0}
+											Increase Offer
+										{:else}
+											Make an Offer
+										{/if}</Button>
 
-								{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
-									<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+									{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
+										<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+									{/if}
 								{/if}
 							{/if}
-						{/if}
-					</div>
+						</div>
+					{/if}
+				{:else}
+					To make an offer on this NFT you need metamask or a browser with web3 capabilties.
 				{/if}
 				<br />
 				<!--<button on:click="{bids}">bids</button>-->
