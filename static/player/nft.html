@@ -445,10 +445,72 @@
 			color: #fff;
 			border-radius: 100px;
 			padding: 10px 20px;
-			margin: 20px auto;
-			width: 100px;
+			min-width: 150px;
 			text-align: center;
 			font-weight: bold;
+		}
+
+		#infoPanel {
+			padding: 0px 20px;
+		}
+
+		#infoPanel h4 {
+			margin: 15px 0px 10px;
+			color: #383c3a;
+		}
+
+		.loader {
+			min-width: 40px;
+			height: 40px;
+			background-color: rgb(20, 115, 23);
+			background-image: url('/img/spinner_oval.svg');
+			background-size: 24px;
+			background-position: center;
+			background-repeat: no-repeat;
+			border-radius: 6px;
+			transition: background 0.2s;
+		}
+
+		.latestBid {
+			display: flex;
+			border: solid 4px #eaeaea;
+			border-radius: 100px;
+			margin: 0px 20px 10px;
+			overflow: hidden;
+			background: #eaeaea;
+		}
+
+		.latestBid .txt {
+			padding-left: 10px;
+			display: flex;
+			align-items: center;
+			font-weight: bold;
+		}
+
+		.bidLoaded .loader {
+			background-color: #fff;
+			background-image: url('/img/ico_matic.svg');
+		}
+
+		#offerPanel {
+			display: flex;
+			border: solid 2px #eaeaea;
+			border-radius: 100px;
+			margin: 0px 20px 10px;
+			overflow: hidden;
+		}
+
+		#offerPanel input {
+			background-image: url('/img/ico_matic.svg');
+			background-size: 20px;
+			background-repeat: no-repeat;
+			background-position: 12px center;
+			;
+			height: 100%;
+			border: 0px;
+			text-indent: 40px;
+			font-size: 1.2em;
+			width: 160px;
 		}
 	</style>
 
@@ -457,33 +519,537 @@
 <body>
 
 	<header>
-		<div class="profileBG"
-			style="background-image:url('https://lh3.googleusercontent.com/tY4sfA4hgcA0deHSS2M9-9hV5qymvpfCLfZXSWCqngLhFLRKS7zGitx8ZMwDxSWqgaHHEdUrTEUQcvTrebKpCzOFiEdltWAW1gTVAw')">
+		<div id="header" class="profileBG">
+		</div>
+		<div id="infoPanel">
+			<h4 id="nftName"></h4>
+			<p id="nftDescription"></p>
+		</div>
+		<div id="bidPanel" class="latestBid">
+			<div>
+				<div class="loader"></div>
+			</div>
+
+			<div class="txt">
+				<b>Latest Bid</b>: <span id="latestBid">Loading..</span>
+			</div>
 		</div>
 	</header>
 
-	<div id="but">Test</div>
+	<div id="offerPanel">
+		<div style="flex:1">
+			<input id="price" type="number" value="" placeholder="Matic" name="offer" />
+		</div>
+		<div id="but">Make an Offer</div>
+	</div>
 
 	<script>
 
+		//hackathon quick POC of twitter integration..
+		const abi = [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_treeToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_uniRouter",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_wMatic",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "nftContract",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "bidder",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "bidAccepted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "nftContract",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "bidder",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "bidCancelled",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "nftContract",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "bidder",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "bidPlaced",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "nftContract",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "bidder",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "bidRejected",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_nftContract",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_price",
+						"type": "uint256"
+					}
+				],
+				"name": "acceptBid",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "bids",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "nftContract",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "bidder",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_nftContract",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "cancelBid",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_nftContract",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "getBid",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "nftContract",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tokenId",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "bidder",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "price",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Tree.Bid",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_nftContract",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_price",
+						"type": "uint256"
+					}
+				],
+				"name": "placeBid",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_nftContract",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "rejectBid",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "swapRouter",
+				"outputs": [
+					{
+						"internalType": "contract ISwapRouter",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "treeToken",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "treeTokenMaxSupply",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "uniRouter",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "wMatic",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		];
 		const serverUrl = 'https://lzf1jh5sx176.usemoralis.com:2053/server';
 		const appId = 'XmxLvKVKIGQZexV2bcx8583lGNlnpY5ksXjiQkM2';
 
-		//connect to moralis
-		Moralis.start({ serverUrl, appId });
+		async function connect() {
+			//connect to moralis
+			await Moralis.start({ serverUrl, appId });
+			await Moralis.enableWeb3();
+			console.log('connected');
+
+			getNFT();
+			getLatestBid();
+		}
+		connect();
+
+		const contractAdd = '0x2953399124f0cbb46d2cbacd8a89cf0599974963';
+		const toeknID = '13881000456214464272594247052417607500385614301131248520949923274483803619329';
+
+		async function getNFT() {
+			console.log('getNFT data');
+			const options = { address: contractAdd, token_id: toeknID, chain: 'mumbai' };
+			const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+
+			console.log('-------------', tokenIdMetadata);
+			const nftMeta = JSON.parse(tokenIdMetadata.metadata);
+			document.querySelector('#header').style = `background-image:url("${nftMeta.image}")`;
+			document.querySelector('#nftName').innerHTML = nftMeta.name;
+			document.querySelector('#nftDescription').innerHTML = nftMeta.description;
+		}
+
+
+		async function getLatestBid() {
+			console.log('getLatestBid');
+			document.querySelector('#offerPanel').style = 'display:none';
+			const ethers = Moralis.web3Library;
+			//const bigNumberPrice = activePrice);
+
+			const options = {
+				chain: 'mumbai',
+				contractAddress: '0xdb4911f8eC72f4E8B213e52bB932adE330Eb7EBb',
+				functionName: 'getBid',
+				abi: abi,
+				params: {
+					_nftContract: contractAdd,
+					_tokenId: toeknID,
+				},
+			};
+
+			const getBid = await Moralis.executeFunction(options);
+			console.log('[getBid]', getBid);
+			//console.log(getBid.timestamp.toString());
+			//console.log(getBid.tokenId.toString());
+			//console.log(getBid.bidder);
+			//console.log(ethers.utils.formatEther(getBid.price.toString()));
+
+			let latestBid = ethers.utils.formatEther(getBid.price.toString());
+			document.querySelector('#latestBid').innerHTML = latestBid;
+			document.querySelector('#bidPanel').classList.add('bidLoaded');
+			document.getElementById('price').value = parseFloat(latestBid) + 0.05;
+			document.querySelector('#offerPanel').style = 'display:flex;';
+		}
+
 
 		let user;
 		document.querySelector('#but').addEventListener('click', async () => {
 			console.log('click')
-			user = await Moralis.authenticate({ signingMessage: 'Log in using Moralis' })
-				.then(function (user) {
-					console.log('logged in user:', user);
-					console.log(user.get('ethAddress'));
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
+			if (!user) {
+				user = await Moralis.authenticate({ signingMessage: 'Log in using Moralis' })
+					.then(function (user) {
+						console.log('logged in user:', user);
+						console.log(user.get('ethAddress'));
+						makeOffer();
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+			} else {
+				makeOffer();
+			}
 		});
+
+		/**
+		 * makeOffer
+		 */
+		async function makeOffer() {
+			console.log('[makeOffer]');
+
+			document.querySelector('#offerPanel').style = 'display:none';
+			document.querySelector('#bidPanel').classList.remove('bidLoaded');
+
+			const activePrice = document.getElementById('price').value;
+			const web3 = await Moralis.enableWeb3(); //do I need this?...
+			const ethers = Moralis.web3Library;
+			const bigNumberPrice = ethers.utils.parseEther(activePrice);
+
+			const options = {
+				chain: 'mumbai',
+				contractAddress: '0xdb4911f8eC72f4E8B213e52bB932adE330Eb7EBb',
+				functionName: 'placeBid',
+				abi: abi,
+				params: {
+					_nftContract: contractAdd,
+					_tokenId: toeknID,
+					_price: bigNumberPrice,
+				},
+				msgValue: bigNumberPrice,
+			};
+
+			const placeBid = await Moralis.executeFunction(options);
+			console.log('[placeBid]', placeBid);
+			await placeBid.wait();
+			document.querySelector('#bidPanel').classList.add('bidLoaded');
+			getLatestBid();
+		}
+
 	</script>
 </body>
 
