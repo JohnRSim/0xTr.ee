@@ -572,6 +572,16 @@
 			font-weight: bold;
 			width: 80px;
 		}
+
+		.web3InfoPanel {
+			display: none;
+			border-top: solid 8px #00c7b6;
+			border-radius: 8px;
+			padding: 16px 24px 24px 24px;
+			margin: 20px;
+			box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+				rgba(14, 30, 37, 0.12) 0px 2px 4px 0px;
+		}
 	</style>
 
 </head>
@@ -600,6 +610,9 @@
 				<div class="txt">
 					<b>Latest Bid</b>: <span id="latestBid">Loading..</span>
 				</div>
+			</div>
+			<div id="web3InfoPanel">
+				To make an offer on this NFT you need metamask or a browser with web3 capabilties.
 			</div>
 		</header>
 
@@ -1031,11 +1044,22 @@
 		async function connect() {
 			//connect to moralis
 			await Moralis.start({ serverUrl, appId });
-			await Moralis.enableWeb3();
+
+			if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+				await Moralis.enableWeb3();
+			}
 			console.log('connected');
 
 			getNFT();
-			getLatestBid();
+
+			if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+				getLatestBid();
+			} else {
+
+				document.querySelector('#offerPanel').style = 'display:none';
+				document.querySelector('#bidPanel').style = 'display:none';
+				document.querySelector('#web3InfoPanel').style = 'display:block';
+			}
 		}
 		connect();
 

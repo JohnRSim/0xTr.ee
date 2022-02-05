@@ -465,6 +465,14 @@
 		background-position: center;
 		border: solid 2px #eaeaea;
 	}
+	.web3InfoPanel {
+		border-top: solid 8px #00c7b6;
+		border-radius: 8px;
+		padding: 16px 24px 24px 24px;
+		margin: 20px;
+		box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+			rgba(14, 30, 37, 0.12) 0px 2px 4px 0px;
+	}
 </style>
 
 <SEO {...seoProps} />
@@ -552,7 +560,9 @@
 						</div>
 					{/if}
 				{:else}
-					To make an offer on this NFT you need metamask or a browser with web3 capabilties.
+					<div class="web3InfoPanel">
+						To make an offer on this NFT you need metamask or a browser with web3 capabilties.
+					</div>
 				{/if}
 				<br />
 				<!--<button on:click="{bids}">bids</button>-->
