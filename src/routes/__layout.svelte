@@ -1099,6 +1099,37 @@
 		await placeBid.wait();
 		sBidding.updateVal('waitingTransaction', false);
 	}
+
+	/**
+	 * acceptOffer
+	 */
+	async function acceptOffer() {
+		console.log('[acceptOffer]');
+
+		const web3 = await Moralis.enableWeb3(); //do I need this?...
+		const ethers = Moralis.web3Library;
+		const bigNumberPrice = ethers.utils.parseEther($sBidding.latestBidPrice);
+
+		const options = {
+			chain: $sBidding.chain, //'mumbai',
+			contractAddress: $sBidding.treeContract, //'0x094251c982cb00B1b1E1707D61553E304289D4D8', //tree contract
+			functionName: 'acceptBid',
+			abi: ABI.abi,
+			params: {
+				_nftContract: $sBidding.nftContract, //'0x2953399124f0cbb46d2cbacd8a89cf0599974963',
+				_tokenId: $sBidding.tokenId, //'13881000456214464272594247052417607500385614301131248520949923275583315247105',
+				_price: bigNumberPrice,
+			},
+		};
+
+		const acceptBid = await Moralis.executeFunction(options);
+		console.log('[acceptBid]', placeBid);
+		closeWindow();
+		sBidding.updateVal('waitingTransaction', $sBidding.tokenId);
+		await acceptBid.wait();
+		sBidding.updateVal('waitingTransaction', false);
+	}
+
 	/*
 	modalHeader = 'Choose Your Profile NFT';
 	modalContent = 'selectNFT';
@@ -1599,6 +1630,7 @@
 <ModalWindow
 	on:closeWindow="{closeWindow}"
 	on:makeOffer="{makeOffer}"
+	on:acceptOffer="{acceptOffer}"
 	show="{showModal}"
 	header="{modalHeader}"
 	subHeader="{modalSubHeader}"
@@ -1627,8 +1659,7 @@
 			</dt>
 			<dd>
 				<label for="fromWallet" class="fromWallet">From</label>
-				<textarea id="priceField" type="text" placeholder="Enter amount"
-					>0x1Eb05E2Ab2e838EB2c5ce9AEfb66068313FFED7F</textarea>
+				<textarea readonly id="priceField" type="text">{$sBidding.buyerID}</textarea>
 			</dd>
 		</dl>
 		<div class="hr"><hr /></div>
@@ -1641,7 +1672,12 @@
 				<div class="crypto">Matic</div>
 				<!--<div><span></span></div>-->
 			</label>
-			<input id="priceField" type="text" placeholder="Enter amount" />
+			<input
+				id="priceField"
+				readonly
+				value="{$sBidding.latestBidPrice}"
+				type="text"
+				placeholder="Enter amount" />
 		</div>
 	{/if}
 

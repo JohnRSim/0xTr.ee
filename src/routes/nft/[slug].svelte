@@ -66,16 +66,27 @@
 		},
 	];
 	$: nftMeta = {};
+	$: owner = '';
 	$: nftImage = nftMeta.image ? `background-image:url("${nftMeta.image}")` : '';
 	$: activity = [];
 
 	$: if ($sBidding.waitingTransaction === $sBidding.tokenId) {
 		console.log('................................loading..........');
+		bidUpdating();
+	}
+	let updatingBid = false;
+	$: if ($sBidding.waitingTransaction !== $sBidding.tokenId && updatingBid) {
+		console.log('................................updating Bid..........');
+		getbid();
+	}
+
+	function bidUpdating() {
 		latestBid = false;
 		showBiddingOptions = false;
 		loadingTxt = 'Updating';
-	} else {
-		console.log('................................updating Bid..........');
+	}
+	function getbid() {
+		updatingBid = false;
 		getLatestBid();
 		showBiddingOptions = true;
 	}
@@ -90,6 +101,7 @@
 	$: latestBid = false;
 
 	onMount(async () => {
+		Moralis.enableWeb3();
 		const addressArr = slug.split('_');
 		console.log(addressArr);
 		sBidding.updateVal('nftContract', addressArr[0]);
@@ -100,6 +112,7 @@
 		const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
 		console.log('-------------', tokenIdMetadata);
 		nftMeta = JSON.parse(tokenIdMetadata.metadata);
+		owner = tokenIdMetadata.owner_of;
 		console.log(nftMeta);
 
 		const getWalletTokenIdTransfers = await Moralis.Web3API.token.getWalletTokenIdTransfers(
@@ -141,6 +154,8 @@
 		console.log(ethers.utils.formatEther(getBid.price.toString()));
 
 		latestBid = ethers.utils.formatEther(getBid.price.toString());
+		sBidding.updateVal('latestBidPrice', latestBid);
+		sBidding.updateVal('buyerID', getBid.bidder);
 		lastestBidderID = getBid.bidder;
 
 		loadingTxt = '';
@@ -300,31 +315,55 @@
 				</div>
 				{#if showBiddingOptions}
 					<div style="display:flex;align-items:center;justif-content:center">
-						<Button
-							{...bigBlue}
-							on:click="{() => {
-								sModal.showModal({
-									enable: 'true',
-									title: 'Make an  Offer',
-									subHeader:
-										'By making an offer you will be sending funds into a holding area until offer has been accepted.',
-									tpl: 'price',
-									buttons: [
-										{
-											text: 'Make An Offer',
-											action: 'makeOffer',
-										},
-									],
-								});
-							}}">
+						{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
 							{#if latestBid > 0}
-								Increase Offer
-							{:else}
-								Make an Offer
-							{/if}</Button>
+								<Button
+									{...bigBlue}
+									on:click="{() => {
+										sModal.showModal({
+											enable: 'true',
+											title: 'Accept Offer',
+											subHeader:
+												'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
+											tpl: 'recievedOffer',
+											buttons: [
+												{
+													text: 'Accept Offer',
+													action: 'acceptOffer',
+												},
+											],
+										});
+									}}">
+									Accept Offer</Button>
+							{/if}
+						{:else}
+							<Button
+								{...bigBlue}
+								on:click="{() => {
+									updatingBid = true;
+									sModal.showModal({
+										enable: 'true',
+										title: 'Make an  Offer',
+										subHeader:
+											'By making an offer you will be sending funds into a holding area until offer has been accepted.',
+										tpl: 'price',
+										buttons: [
+											{
+												text: 'Make An Offer',
+												action: 'makeOffer',
+											},
+										],
+									});
+								}}">
+								{#if latestBid > 0}
+									Increase Offer
+								{:else}
+									Make an Offer
+								{/if}</Button>
 
-						{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
-							<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+							{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
+								<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+							{/if}
 						{/if}
 					</div>
 				{/if}

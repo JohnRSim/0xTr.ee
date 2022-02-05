@@ -11,6 +11,8 @@ const setup = {
 	treeContract: '0x094251c982cb00B1b1E1707D61553E304289D4D8',
 	nftContract: '',
 	tokenId: '',
+	latestBidPrice: '',
+	buyerID: '',
 	waitingTransaction: false,//tokenID
 };
 
