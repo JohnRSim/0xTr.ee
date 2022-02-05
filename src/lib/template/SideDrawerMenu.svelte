@@ -128,6 +128,12 @@
 					</li>
 					<li
 						on:click="{() => {
+							dispatchEvent({ action: 'nav', path: `/0x123e710c69b6806ef32Cf52e49dCC5EEEc368a22` });
+						}}">
+						Test Wallet
+					</li>
+					<li
+						on:click="{() => {
 							dispatchEvent({ action: 'nav', path: '/uniswap' });
 						}}">
 						<img width="26" src="/img/ico_uniswap.svg" alt="" />Uniswap

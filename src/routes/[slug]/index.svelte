@@ -83,21 +83,27 @@
 		refresh();
 	}
 
+	let oldslug = slug;
 	function refresh() {
-		console.log('.......slug', slug, $sUser.ethAddress, userAccount);
-		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
-		if (userAccount) {
-			tokenList = $sUser.ft;
-			NFTs = $sUser.nft;
-			socialLinks = Object.entries($sUser.profile.socialLinks);
-		} else {
-			if ($sWallet[slug]) {
-				tokenList = $sWallet[slug].ft;
-				NFTs = $sWallet[slug].nft;
-				socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
+		if (oldslug !== slug) {
+			console.log('.......slug', slug, $sUser.ethAddress, userAccount);
+			userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
+			if (userAccount) {
+				tokenList = $sUser.ft;
+				NFTs = $sUser.nft;
+				socialLinks = Object.entries($sUser.profile.socialLinks);
+				loading = false;
 			} else {
-				updateWallet();
+				if ($sWallet[slug]) {
+					tokenList = $sWallet[slug].ft;
+					NFTs = $sWallet[slug].nft;
+					socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
+					loading = false;
+				} else {
+					updateWallet();
+				}
 			}
+			oldslug = slug;
 		}
 	}
 
@@ -111,16 +117,18 @@
 
 	onMount(async () => {
 		console.log('[onMount][wallet]');
-
+		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
 		if (userAccount) {
 			tokenList = $sUser.ft;
 			NFTs = $sUser.nft;
 			socialLinks = Object.entries($sUser.profile.socialLinks);
+			loading = false;
 		} else {
 			if ($sWallet[slug]) {
 				tokenList = $sWallet[slug].ft;
 				NFTs = $sWallet[slug].nft;
 				socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
+				loading = false;
 			}
 		}
 
@@ -528,7 +536,7 @@
 
 					<div style="width:100%;">
 						{#if tab === 'Tokens'}
-							{#if loading}
+							{#if loading && tokenList.length === 0}
 								...loading
 							{:else}
 								<div class="tokenList">
@@ -655,7 +663,7 @@
 								</div>
 							{/if}
 						{:else if tab === 'NFTs'}
-							{#if loading}
+							{#if loading && NFTs.length === 0}
 								...loading
 							{:else}
 								<ul class="grid">
