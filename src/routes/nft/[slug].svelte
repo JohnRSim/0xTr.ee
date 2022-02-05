@@ -36,6 +36,9 @@
 	// svelte
 	import { onDestroy, onMount } from 'svelte';
 
+	//ABI
+	import ABI from '$lib/abi/tree.json';
+
 	//components
 	import HeaderTabList from '$lib/components/HeaderTabList.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -43,6 +46,8 @@
 
 	//stores
 	import { modal as sModal } from '../../stores/modal.js';
+	import { bidding as sBidding } from '../../stores/bidding.js';
+	import { user as sUser } from '../../stores/user.js';
 
 	export let tab, slug;
 
@@ -63,12 +68,32 @@
 	$: nftMeta = {};
 	$: nftImage = nftMeta.image ? `background-image:url("${nftMeta.image}")` : '';
 	$: activity = [];
+
+	$: if ($sBidding.waitingTransaction === $sBidding.tokenId) {
+		console.log('................................loading..........');
+		latestBid = false;
+		showBiddingOptions = false;
+		loadingTxt = 'Updating';
+	} else {
+		console.log('................................updating Bid..........');
+		getLatestBid();
+		showBiddingOptions = true;
+	}
 	//$: nftImage =
 	//typeof nftImage.image !== 'undefined' ? `background-image:url("${nftImage.image}")` : '';
+
+	//bid
+	let showBiddingOptions = true;
+	let bidLoading = true;
+	let lastestBidderID = '';
+	let loadingTxt = '';
+	$: latestBid = false;
 
 	onMount(async () => {
 		const addressArr = slug.split('_');
 		console.log(addressArr);
+		sBidding.updateVal('nftContract', addressArr[0]);
+		sBidding.updateVal('tokenId', addressArr[1]);
 		const options = { address: addressArr[0], token_id: addressArr[1], chain: 'mumbai' };
 		//const metaData = await Moralis.Web3API.token.getNFTMetadata(options);
 		//const tokenMetadata = await Moralis.Web3API.token.getTokenMetadata(options);
@@ -82,7 +107,79 @@
 		);
 		console.log('getWalletTokenIdTransfers', getWalletTokenIdTransfers);
 		activity = getWalletTokenIdTransfers.result;
+
+		getLatestBid();
 	});
+
+	/**
+	 * getLatestBid
+	 */
+	async function getLatestBid() {
+		console.log('[getLatestBid]');
+		bidLoading = true;
+		loadingTxt = 'Loading';
+		//const web3 = await Moralis.enableWeb3();//do I need this?...
+		const ethers = Moralis.web3Library;
+		//const bigNumberPrice = activePrice);
+
+		const options = {
+			chain: $sBidding.chain, //'mumbai',
+			contractAddress: $sBidding.treeContract,
+			functionName: 'getBid',
+			abi: ABI.abi,
+			params: {
+				_nftContract: $sBidding.nftContract,
+				_tokenId: $sBidding.tokenId,
+			},
+		};
+
+		const getBid = await Moralis.executeFunction(options);
+		console.log('[getBid]', getBid);
+		console.log(getBid.timestamp.toString());
+		console.log(getBid.tokenId.toString());
+		console.log(getBid.bidder);
+		console.log(ethers.utils.formatEther(getBid.price.toString()));
+
+		latestBid = ethers.utils.formatEther(getBid.price.toString());
+		lastestBidderID = getBid.bidder;
+
+		loadingTxt = '';
+		bidLoading = false;
+	}
+
+	/**
+	 * cancelLatestBid
+	 */
+	async function cancelLatestBid() {
+		console.log('[cancelBid]');
+		showBiddingOptions = false;
+		bidLoading = true;
+		loadingTxt = 'Canceling';
+		//const web3 = await Moralis.enableWeb3();//do I need this?...
+		const ethers = Moralis.web3Library;
+		//const bigNumberPrice = activePrice);
+
+		const options = {
+			chain: $sBidding.chain, //'mumbai',
+			contractAddress: $sBidding.treeContract,
+			functionName: 'cancelBid',
+			abi: ABI.abi,
+			params: {
+				_nftContract: $sBidding.nftContract,
+				_tokenId: $sBidding.tokenId,
+			},
+		};
+
+		const cancelBid = await Moralis.executeFunction(options);
+		latestBid = false;
+		console.log('[cancelBid]', cancelBid);
+		await cancelBid.wait();
+		loadingTxt = '';
+		showBiddingOptions = true;
+		getLatestBid();
+
+		bidLoading = false;
+	}
 </script>
 
 <style lang="scss">
@@ -146,6 +243,37 @@
 	hr {
 		display: none;
 	}
+	.loader {
+		min-width: 40px;
+		height: 40px;
+		background-color: rgb(20, 115, 23);
+		background-image: url('/img/spinner_oval.svg');
+		background-size: 24px;
+		background-position: center;
+		background-repeat: no-repeat;
+		border-radius: 6px;
+		transition: background 0.2s;
+	}
+
+	.latestBid {
+		display: flex;
+		border: solid 4px #eaeaea;
+		border-radius: 100px;
+		margin: 0px 20px 10px;
+		overflow: hidden;
+		background: #eaeaea;
+	}
+	.latestBid .txt {
+		padding-left: 10px;
+		display: flex;
+		align-items: center;
+		font-weight: bold;
+	}
+
+	.bidLoaded .loader {
+		background-color: #fff;
+		background-image: url('/img/ico_matic.svg');
+	}
 </style>
 
 <section style="transform: translate3d(0px, 0px, 0px);" id="XT-NFT" class="scrollable gpu_acc">
@@ -159,25 +287,47 @@
 						<p>{nftMeta.description}</p>
 					{/if}
 				</div>
-				<div style="display:flex;align-items:center;justif-content:center">
-					<Button
-						{...bigBlue}
-						on:click="{() => {
-							sModal.showModal({
-								enable: 'true',
-								title: 'Make an  Offer',
-								subHeader:
-									'By making an offer you will be sending funds into a holding area until offer has been accepted.',
-								tpl: 'price',
-								buttons: [
-									{
-										text: 'Make An Offer',
-										action: 'makeOffer',
-									},
-								],
-							});
-						}}">Make Offer</Button>
+				<div class="latestBid" class:bidLoaded="{latestBid}">
+					<div><div class="loader"></div></div>
+
+					<div class="txt">
+						{#if latestBid}
+							<b>Latest Bid</b>: {latestBid}
+						{:else}
+							{loadingTxt} Latest Bid
+						{/if}
+					</div>
 				</div>
+				{#if showBiddingOptions}
+					<div style="display:flex;align-items:center;justif-content:center">
+						<Button
+							{...bigBlue}
+							on:click="{() => {
+								sModal.showModal({
+									enable: 'true',
+									title: 'Make an  Offer',
+									subHeader:
+										'By making an offer you will be sending funds into a holding area until offer has been accepted.',
+									tpl: 'price',
+									buttons: [
+										{
+											text: 'Make An Offer',
+											action: 'makeOffer',
+										},
+									],
+								});
+							}}">
+							{#if latestBid > 0}
+								Increase Offer
+							{:else}
+								Make an Offer
+							{/if}</Button>
+
+						{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
+							<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+						{/if}
+					</div>
+				{/if}
 				<br />
 			</header>
 			<HeaderTabList

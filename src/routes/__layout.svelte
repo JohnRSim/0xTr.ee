@@ -38,6 +38,7 @@
 	import { history as sHistory } from '../stores/history.js';
 	import { modal as sModal } from '../stores/modal.js';
 	import { socialModal as sSocialModal } from '../stores/socialModal.js';
+	import { bidding as sBidding } from '../stores/bidding.js';
 
 	//ABI
 	import ABI from '$lib/abi/tree.json';
@@ -1074,18 +1075,18 @@
 	async function makeOffer() {
 		console.log('[makeOffer]');
 
-		const web3 = await Moralis.enableWeb3();
+		const web3 = await Moralis.enableWeb3(); //do I need this?...
 		const ethers = Moralis.web3Library;
 		const bigNumberPrice = ethers.utils.parseEther(activePrice);
 
 		const options = {
-			chain: 'mumbai',
-			contractAddress: '0x094251c982cb00B1b1E1707D61553E304289D4D8', //tree contract
+			chain: $sBidding.chain, //'mumbai',
+			contractAddress: $sBidding.treeContract, //'0x094251c982cb00B1b1E1707D61553E304289D4D8', //tree contract
 			functionName: 'placeBid',
 			abi: ABI.abi,
 			params: {
-				_nftContract: '0x2953399124f0cbb46d2cbacd8a89cf0599974963',
-				_tokenId: '13881000456214464272594247052417607500385614301131248520949923275583315247105',
+				_nftContract: $sBidding.nftContract, //'0x2953399124f0cbb46d2cbacd8a89cf0599974963',
+				_tokenId: $sBidding.tokenId, //'13881000456214464272594247052417607500385614301131248520949923275583315247105',
 				_price: bigNumberPrice,
 			},
 			msgValue: bigNumberPrice,
@@ -1094,6 +1095,9 @@
 		const placeBid = await Moralis.executeFunction(options);
 		console.log('[placeBid]', placeBid);
 		closeWindow();
+		sBidding.updateVal('waitingTransaction', $sBidding.tokenId);
+		await placeBid.wait();
+		sBidding.updateVal('waitingTransaction', false);
 	}
 	/*
 	modalHeader = 'Choose Your Profile NFT';
@@ -1727,7 +1731,9 @@
 		<!-- Side Panels -->
 		<!-- Side Drawer Panel-->
 		<SideDrawerMenu
-			on:nav="{() => {
+			on:nav="{(e) => {
+				console.log('???', e.detail.path);
+				goto(e.detail.path);
 				updateDisplay('home');
 			}}"
 			on:signout="{signOut}"

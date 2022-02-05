@@ -67,6 +67,8 @@
 	nav ul li {
 		list-style: none;
 		padding: 8px 15px;
+		display: flex;
+		align-items: center;
 	}
 
 	#S-navPanel footer ul {
@@ -100,6 +102,12 @@
 							dispatchEvent({ action: 'nav', path: '/' });
 						}}">
 						Home
+					</li>
+					<li
+						on:click="{() => {
+							dispatchEvent({ action: 'nav', path: '/uniswap' });
+						}}">
+						<img width="26" src="/img/ico_uniswap.svg" alt="" />Uniswap
 					</li>
 				</ul>
 			</nav>
