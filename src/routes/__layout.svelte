@@ -42,6 +42,7 @@
 
 	//ABI
 	import ABI from '$lib/abi/tree.json';
+	import NFTABI from '$lib/abi/nft.json';
 
 	//console styles
 	const Inf = 'background-color: #f8ffff; color: #276f86';
@@ -1128,12 +1129,17 @@
 			},
 		};
 
-		console.log(options);
+		//const acceptBid = await Moralis.executeFunction(options);
+
 		const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum, "any");
 		const signer = metamaskProvider.getSigner();
-		//const acceptBid = await Moralis.executeFunction(options);
-		const tree = new ethers.Contract(options.contractAddress, options.abi, metamaskProvider);
-		const acceptBid = await tree.connect(signer).acceptBid(options.params._nftContract, options.params._tokenId, options.params._price,{ gasLimit: 5000000 });
+		const tree = new ethers.Contract($sBidding.treeContract, ABI.abi, metamaskProvider);
+		const nft = new ethers.Contract($sBidding.nftContract, NFTABI.abi, metamaskProvider);
+		// Approve Spend
+		const approvalTX = await nft.connect(signer).approve($sBidding.treeContract, $sBidding.tokenId,{ gasLimit: 5000000 });
+		await approvalTX.wait();
+		// Accept Bid
+		const acceptBid = await tree.connect(signer).acceptBid($sBidding.nftContract, $sBidding.tokenId, bigNumberPrice.toString(),{ gasLimit: 5000000 });
 		closeWindow();
 		sBidding.updateVal('waitingTransaction', $sBidding.tokenId);
 		await acceptBid.wait();
