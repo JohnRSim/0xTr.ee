@@ -250,6 +250,32 @@
 		const getBids = await Moralis.executeFunction(options);
 		console.log('[getBids]', getBids);
 	}
+
+	/**
+	 * shareLink
+	 */
+	function shareLink() {
+		if (navigator.share) {
+			navigator
+				.share({
+					title: nftMeta.name,
+					url: window.location.href,
+				})
+				.then(() => {
+					console.log('Thanks for sharing!');
+				})
+				.catch(console.error);
+		} else {
+			shareDialog.classList.add('is-open');
+		}
+	}
+
+	/**
+	 * closeShare
+	 */
+	function closeShare() {
+		shareDialog.classList.remove('is-open');
+	}
 </script>
 
 <style lang="scss">
@@ -344,13 +370,32 @@
 		background-color: #fff;
 		background-image: url('/img/ico_matic.svg');
 	}
+
+	.share {
+		width: 40px;
+		height: 40px;
+		position: absolute;
+		cursor: pointer;
+		bottom: -20px;
+		z-index: 10;
+		right: 20px;
+		background: #f5f7f5;
+		border-radius: 50%;
+		background-image: url('/img/ico_share.svg');
+		background-repeat: no-repeat;
+		background-size: 14px;
+		background-position: center;
+		border: solid 2px #eaeaea;
+	}
 </style>
 
 <section style="transform: translate3d(0px, 0px, 0px);" id="XT-NFT" class="scrollable gpu_acc">
 	<div style="flex:1;display:flex;flex-direction:column;">
 		<article style="flex:1;" dir="auto">
 			<header>
-				<div class="profileBG" style="{nftImage}"></div>
+				<div class="profileBG" style="{nftImage}">
+					<i on:click="{shareLink}" class="share"></i>
+				</div>
 				<div class="infoPanel">
 					{#if nftMeta.name}
 						<h4>{nftMeta.name}</h4>
