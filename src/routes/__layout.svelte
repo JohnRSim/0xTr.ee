@@ -179,6 +179,12 @@
 		//connect to moralis
 		Moralis.start({ serverUrl, appId });
 
+		/*Moralis.settings.setAPIRateLimit({
+			anonymous: 50,
+			authenticated: 1000,
+			windowMs: 60000,
+		});*/
+
 		//calc uiType
 		windowResize({
 			target: {
@@ -1777,7 +1783,10 @@
 				updateDisplay('home');
 			}}"
 			enableAutoTransitions="{enableAutoTransitions}"
-			drawerMenuPos="{drawerMenuPos}" />
+			drawerMenuPos="{drawerMenuPos}"
+			userAccount="{$sUser.ethAddress}"
+			treeContract="{$sBidding.treeContract}"
+			treeTokenAddress="{$sBidding.treeTokenAddress}" />
 		<!-- xSide Drawer Panel-->
 
 		<!-- Side Overlay Panel -->

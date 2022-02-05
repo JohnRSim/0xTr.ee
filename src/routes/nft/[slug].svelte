@@ -71,6 +71,7 @@
 	$: activity = [];
 
 	$: if ($sBidding.waitingTransaction === $sBidding.tokenId) {
+		updatingBid = true;
 		console.log('................................loading..........');
 		bidUpdating();
 	}
@@ -195,6 +196,60 @@
 
 		bidLoading = false;
 	}
+	/**
+	 * rejectLatestBid
+	 */
+	async function rejectLatestBid() {
+		console.log('[rejectLatestBid]');
+		showBiddingOptions = false;
+		bidLoading = true;
+		loadingTxt = 'Canceling';
+		//const web3 = await Moralis.enableWeb3();//do I need this?...
+		const ethers = Moralis.web3Library;
+		//const bigNumberPrice = activePrice);
+
+		const options = {
+			chain: $sBidding.chain, //'mumbai',
+			contractAddress: $sBidding.treeContract,
+			functionName: 'rejectBid',
+			abi: ABI.abi,
+			params: {
+				_nftContract: $sBidding.nftContract,
+				_tokenId: $sBidding.tokenId,
+			},
+		};
+
+		const rejectBid = await Moralis.executeFunction(options);
+		latestBid = false;
+		console.log('[rejectBid]', rejectBid);
+		await rejectBid.wait();
+		loadingTxt = '';
+		showBiddingOptions = true;
+		getLatestBid();
+
+		bidLoading = false;
+	}
+
+	/**
+	 * bids
+	 */
+	async function bids() {
+		console.log('[bids]');
+		//const web3 = await Moralis.enableWeb3();//do I need this?...
+		const ethers = Moralis.web3Library;
+		//const bigNumberPrice = activePrice);
+
+		const options = {
+			chain: $sBidding.chain, //'mumbai',
+			contractAddress: $sBidding.treeContract,
+			functionName: 'bids',
+			abi: ABI.abi,
+			params: {},
+		};
+
+		const getBids = await Moralis.executeFunction(options);
+		console.log('[getBids]', getBids);
+	}
 </script>
 
 <style lang="scss">
@@ -315,59 +370,63 @@
 				</div>
 				{#if showBiddingOptions}
 					<div style="display:flex;align-items:center;justif-content:center">
-						{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
-							{#if latestBid > 0}
+						{#if owner}
+							{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
+								{#if latestBid > 0}
+									<Button
+										{...bigBlue}
+										on:click="{() => {
+											sModal.showModal({
+												enable: 'true',
+												title: 'Accept Offer',
+												subHeader:
+													'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
+												tpl: 'recievedOffer',
+												buttons: [
+													{
+														text: 'Accept Offer',
+														action: 'acceptOffer',
+													},
+												],
+											});
+										}}">
+										Accept Offer</Button>
+									<Button {...bigBlue} on:click="{rejectLatestBid}">Decline Offer</Button>
+								{/if}
+							{:else}
 								<Button
 									{...bigBlue}
 									on:click="{() => {
+										//updatingBid = true;
 										sModal.showModal({
 											enable: 'true',
-											title: 'Accept Offer',
+											title: 'Make an  Offer',
 											subHeader:
-												'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
-											tpl: 'recievedOffer',
+												'By making an offer you will be sending funds into a holding area until offer has been accepted.',
+											tpl: 'price',
 											buttons: [
 												{
-													text: 'Accept Offer',
-													action: 'acceptOffer',
+													text: 'Make An Offer',
+													action: 'makeOffer',
 												},
 											],
 										});
 									}}">
-									Accept Offer</Button>
-							{/if}
-						{:else}
-							<Button
-								{...bigBlue}
-								on:click="{() => {
-									updatingBid = true;
-									sModal.showModal({
-										enable: 'true',
-										title: 'Make an  Offer',
-										subHeader:
-											'By making an offer you will be sending funds into a holding area until offer has been accepted.',
-										tpl: 'price',
-										buttons: [
-											{
-												text: 'Make An Offer',
-												action: 'makeOffer',
-											},
-										],
-									});
-								}}">
-								{#if latestBid > 0}
-									Increase Offer
-								{:else}
-									Make an Offer
-								{/if}</Button>
+									{#if latestBid > 0}
+										Increase Offer
+									{:else}
+										Make an Offer
+									{/if}</Button>
 
-							{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
-								<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+								{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
+									<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+								{/if}
 							{/if}
 						{/if}
 					</div>
 				{/if}
 				<br />
+				<!--<button on:click="{bids}">bids</button>-->
 			</header>
 			<HeaderTabList
 				on:tab="{(e) => {

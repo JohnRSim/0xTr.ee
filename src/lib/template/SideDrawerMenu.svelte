@@ -4,6 +4,9 @@
 
 	export let enableAutoTransitions = false;
 	export let drawerMenuPos = '0px';
+	export let userAccount = false;
+	export let treeContract = false;
+	export let treeTokenAddress = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -102,6 +105,26 @@
 							dispatchEvent({ action: 'nav', path: '/' });
 						}}">
 						Home
+					</li>
+					{#if userAccount}
+						<li
+							on:click="{() => {
+								dispatchEvent({ action: 'nav', path: `/${userAccount}` });
+							}}">
+							My Wallet
+						</li>
+					{/if}
+					<li
+						on:click="{() => {
+							dispatchEvent({ action: 'nav', path: `/${treeContract}` });
+						}}">
+						Tree Contract
+					</li>
+					<li
+						on:click="{() => {
+							dispatchEvent({ action: 'nav', path: `/${treeTokenAddress}` });
+						}}">
+						Tree Token
 					</li>
 					<li
 						on:click="{() => {

@@ -8,7 +8,8 @@ const appConfig = { instance: 'DEV' }
  */
 const setup = {
 	chain: 'mumbai',
-	treeContract: '0x094251c982cb00B1b1E1707D61553E304289D4D8',
+	treeContract: '0xdb4911f8eC72f4E8B213e52bB932adE330Eb7EBb',//'0x094251c982cb00B1b1E1707D61553E304289D4D8',
+	treeTokenAddress: '0x2a22886bFF44358Cbdd719eD40A3641E600138A6',
 	nftContract: '',
 	tokenId: '',
 	latestBidPrice: '',
@@ -24,7 +25,7 @@ function manageBidding() {
 	let store = setup;
 	if (browser) {
 		if (localStorage.getItem(`${appConfig.instance}_bidding`)) {
-			const storedUpdates = JSON.parse(localStorage.getItem(`${appConfig.instance}_app`));
+			const storedUpdates = JSON.parse(localStorage.getItem(`${appConfig.instance}_bidding`));
 			store = {
 				...setup,
 				...storedUpdates,

@@ -43,17 +43,13 @@
 	//stores
 	import { modal as sModal } from '../../stores/modal.js';
 	import { user as sUser } from '../../stores/user';
+	import { wallet as sWallet } from '../../stores/wallet';
 
 	export let tab, slug;
 
 	$: userAccount = false;
 
-	//user authed
-	$: if ($sUser.ethAddress.length > 0 && slug === $sUser.ethAddress) {
-		userAccount = true;
-	}
-
-	let hasTabs = [
+	$: hasTabs = [
 		{
 			name: 'Tokens',
 			path: `/${slug}?tab=Tokens`,
@@ -79,9 +75,31 @@
 			? `background-image:url("${$sUser.profile.profileBGPic}"); background-size:cover;`
 			: '';
 
-	$: tokenList = userAccount ? $sUser.ft : [];
-	$: NFTs = userAccount ? $sUser.nft : [];
-	$: socialLinks = userAccount ? Object.entries($sUser.profile.socialLinks) : [];
+	$: tokenList = [];
+	$: NFTs = [];
+	$: socialLinks = [];
+
+	$: if (slug) {
+		refresh();
+	}
+
+	function refresh() {
+		console.log('.......slug', slug, $sUser.ethAddress, userAccount);
+		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
+		if (userAccount) {
+			tokenList = $sUser.ft;
+			NFTs = $sUser.nft;
+			socialLinks = Object.entries($sUser.profile.socialLinks);
+		} else {
+			if ($sWallet[slug]) {
+				tokenList = $sWallet[slug].ft;
+				NFTs = $sWallet[slug].nft;
+				socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
+			} else {
+				updateWallet();
+			}
+		}
+	}
 
 	let claimedWallet = true;
 	let userAvatar =
@@ -89,9 +107,28 @@
 	userAvatar = '';
 
 	let isMounted = false;
+	let loading = true;
+
 	onMount(async () => {
-		console.log($sUser);
+		console.log('[onMount][wallet]');
+
+		if (userAccount) {
+			tokenList = $sUser.ft;
+			NFTs = $sUser.nft;
+			socialLinks = Object.entries($sUser.profile.socialLinks);
+		} else {
+			if ($sWallet[slug]) {
+				tokenList = $sWallet[slug].ft;
+				NFTs = $sWallet[slug].nft;
+				socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
+			}
+		}
+
 		isMounted = true;
+		updateWallet();
+	});
+
+	async function updateWallet() {
 		let grabNFTs = {};
 		if (userAccount) {
 			tokenList = await Moralis.Web3API.account.getTokenBalances({ chain: 'mumbai' });
@@ -104,24 +141,29 @@
 			grabNFTs = await Moralis.Web3API.account.getNFTs({ chain: 'mumbai', address: slug });
 		}
 
-		const hasNFTs = grabNFTs.result.filter((nft) => {
+		NFTs = grabNFTs.result.filter((nft) => {
 			if (nft.metadata !== null) {
 				nft.metadata = JSON.parse(nft.metadata);
 			}
 			return nft.metadata !== null;
 		});
 
-		console.log('hasNFTs', hasNFTs);
+		console.log('hasNFTs', NFTs);
 		console.log(tokenList);
 		console.log(grabNFTs);
 
 		if (userAccount) {
 			sUser.updateVal('ft', tokenList);
-			sUser.updateVal('nft', hasNFTs);
+			sUser.updateVal('nft', NFTs);
 		} else {
-			NFTs = hasNFTs;
+			sWallet.updateWallet(slug, {
+				id: slug,
+				ft: tokenList,
+				nft: NFTs,
+			});
 		}
-	});
+		loading = false;
+	}
 </script>
 
 <style>
@@ -486,25 +528,28 @@
 
 					<div style="width:100%;">
 						{#if tab === 'Tokens'}
-							<div class="tokenList">
-								{#if tokenList && tokenList.length > 0}
-									{#each tokenList as token}
-										<dl>
-											<dt>
-												<figure>
-													{#if token.logo}
-														<img width="20" src="{token.logo}" alt="{token.name}" />
-													{/if}
-													<figcaption>{token.symbol}</figcaption>
-												</figure>
-											</dt>
-											<dd>
-												{token.balance}<br />
-												{token.name}
-											</dd>
-										</dl>
-									{/each}
-									<!--<dl>
+							{#if loading}
+								...loading
+							{:else}
+								<div class="tokenList">
+									{#if tokenList && tokenList.length > 0}
+										{#each tokenList as token}
+											<dl>
+												<dt>
+													<figure>
+														{#if token.logo}
+															<img width="20" src="{token.logo}" alt="{token.name}" />
+														{/if}
+														<figcaption>{token.symbol}</figcaption>
+													</figure>
+												</dt>
+												<dd>
+													{token.balance}<br />
+													{token.name}
+												</dd>
+											</dl>
+										{/each}
+										<!--<dl>
 										<dt>
 											<figure>
 												<img width="20" src="/img/ico_eth.svg" alt="Ethereum" />
@@ -581,51 +626,58 @@
 											Matic
 										</dd>
 									</dl>-->
-								{:else}
-									<img
-										style="margin-top:30px"
-										width="100%"
-										src="/img/placeholder_moonpay.png"
-										alt="Pay with Moonpay today" />
+									{:else}
+										<img
+											style="margin-top:30px"
+											width="100%"
+											src="/img/placeholder_moonpay.png"
+											alt="Pay with Moonpay today" />
 
-									<div style="text-align:center">
-										<Button
-											on:click="{() => {
-												sModal.showModal({
-													enable: 'true',
-													title: 'Work in Progress',
-													subHeader:
-														'Didn`t have time to build an integration with Moonpay - but the plan would be to use moonpay to purchase tokens for the user wallet..',
-													buttons: [
-														{
-															text: 'Close',
-															action: 'closeWindow',
-														},
-													],
-												});
-											}}"
-											{...bigBlue}>Purchase Tokens</Button>
-									</div>
-								{/if}
-							</div>
-						{:else if tab === 'NFTs'}
-							<ul class="grid">
-								{#if NFTs && NFTs.length > 0}
-									{#each NFTs as NFT}
-										{#if NFT.metadata}
-											<li
+										<div style="text-align:center">
+											<Button
 												on:click="{() => {
-													goto(`/nft/${NFT.token_address}_${NFT.token_id}`);
-												}}">
-												<figure>
-													<img width="100%" src="{NFT.metadata.image}" alt="{NFT.metadata.name}" />
-													<figcaption>{NFT.metadata.name}</figcaption>
-												</figure>
-											</li>
-										{/if}
-									{/each}
-								{/if}
-								<!--
+													sModal.showModal({
+														enable: 'true',
+														title: 'Work in Progress',
+														subHeader:
+															'Didn`t have time to build an integration with Moonpay - but the plan would be to use moonpay to purchase tokens for the user wallet..',
+														buttons: [
+															{
+																text: 'Close',
+																action: 'closeWindow',
+															},
+														],
+													});
+												}}"
+												{...bigBlue}>Purchase Tokens</Button>
+										</div>
+									{/if}
+								</div>
+							{/if}
+						{:else if tab === 'NFTs'}
+							{#if loading}
+								...loading
+							{:else}
+								<ul class="grid">
+									{#if NFTs && NFTs.length > 0}
+										{#each NFTs as NFT}
+											{#if NFT.metadata}
+												<li
+													on:click="{() => {
+														goto(`/nft/${NFT.token_address}_${NFT.token_id}`);
+													}}">
+													<figure>
+														<img
+															width="100%"
+															src="{NFT.metadata.image}"
+															alt="{NFT.metadata.name}" />
+														<figcaption>{NFT.metadata.name}</figcaption>
+													</figure>
+												</li>
+											{/if}
+										{/each}
+									{/if}
+									<!--
 								<li
 									on:click="{() => {
 										goto('/nft/0x123');
@@ -677,33 +729,34 @@
 										<figcaption>Test Token</figcaption>
 									</figure>
 								</li>-->
-								<li>
-									<figure
-										on:click="{() => {
-											sModal.showModal({
-												enable: 'true',
-												title: 'Work in Progress',
-												subHeader:
-													'Didn`t have time to build a marketplace for this hackathon :( - maybe phase 2 ',
-												buttons: [
-													{
-														text: 'Close',
-														action: 'closeWindow',
-													},
-												],
-											});
-										}}">
-										<img
-											style="margin-top:10px;"
-											width="74%"
-											src="/img/ico_logo.svg"
-											alt="Ethereum" />
-										<figcaption class="browse">
-											<button> Browse<br />NFT Marketplace</button>
-										</figcaption>
-									</figure>
-								</li>
-							</ul>
+									<li>
+										<figure
+											on:click="{() => {
+												sModal.showModal({
+													enable: 'true',
+													title: 'Work in Progress',
+													subHeader:
+														'Didn`t have time to build a marketplace for this hackathon :( - maybe phase 2 ',
+													buttons: [
+														{
+															text: 'Close',
+															action: 'closeWindow',
+														},
+													],
+												});
+											}}">
+											<img
+												style="margin-top:10px;"
+												width="74%"
+												src="/img/ico_logo.svg"
+												alt="Ethereum" />
+											<figcaption class="browse">
+												<button> Browse<br />NFT Marketplace</button>
+											</figcaption>
+										</figure>
+									</li>
+								</ul>
+							{/if}
 						{:else if tab === 'Links'}
 							<ul class="linkList">
 								<li>
