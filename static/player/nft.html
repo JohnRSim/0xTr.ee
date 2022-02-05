@@ -1008,6 +1008,27 @@
 		const serverUrl = 'https://lzf1jh5sx176.usemoralis.com:2053/server';
 		const appId = 'XmxLvKVKIGQZexV2bcx8583lGNlnpY5ksXjiQkM2';
 
+		//Grab params passed in addrss bar
+		const queryParams = window.location.search.substring(1).split('&');
+
+		let contractAdd = '0x2953399124f0cbb46d2cbacd8a89cf0599974963';
+		let toeknID = '13881000456214464272594247052417607500385614301131248520949923274483803619329';
+
+		//loop params and apply to viewer
+		for (const param of queryParams) {
+			const keyVal = param.split('=');
+			const key = keyVal[0];
+			const val = decodeURIComponent(keyVal[1].replace(/\+/g, ' '));
+
+			if (key === 'contract') {
+				contractAdd = val;
+			}
+
+			if (key === 'tokenid') {
+				toeknID = val;
+			}
+
+		}
 		async function connect() {
 			//connect to moralis
 			await Moralis.start({ serverUrl, appId });
@@ -1018,9 +1039,6 @@
 			getLatestBid();
 		}
 		connect();
-
-		const contractAdd = '0x2953399124f0cbb46d2cbacd8a89cf0599974963';
-		const toeknID = '13881000456214464272594247052417607500385614301131248520949923274483803619329';
 
 		async function getNFT() {
 			console.log('getNFT data');

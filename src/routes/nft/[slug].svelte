@@ -112,10 +112,11 @@
 	let lastestBidderID = '';
 	let loadingTxt = '';
 	$: latestBid = false;
+	const addressArr = slug.split('_');
 
 	onMount(async () => {
 		Moralis.enableWeb3();
-		const addressArr = slug.split('_');
+
 		console.log(addressArr);
 		sBidding.updateVal('nftContract', addressArr[0]);
 		sBidding.updateVal('tokenId', addressArr[1]);
@@ -344,7 +345,7 @@
 		ogImage,
 		ogSquareImage,
 		twitterImage,
-		playerURL: `https://www.0xtr.ee/player/nft?contract=${$sBidding.nftContract}&wallet=${$sBidding.tokenId}`,
+		playerURL: `https://www.0xtr.ee/player/nft?contract=${addressArr[0]}&tokenid=${addressArr[1]}`,
 	};
 </script>
 
