@@ -140,6 +140,36 @@
 	.priceField label img {
 		margin: 0px 8px 0px 10px;
 	}
+	.web3InfoPanel,
+	#deepLink {
+		border-top: solid 8px #00c7b6;
+		border-radius: 8px;
+		padding: 16px 24px 24px 24px;
+		margin: 20px;
+		box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+			rgba(14, 30, 37, 0.12) 0px 2px 4px 0px;
+	}
+		#deepLink {
+			display: flex;
+
+		}
+
+		#deepLink a {
+			color: #0d1821;
+			text-decoration: none;
+			font-weight: bold;
+			font-size: 1.1em;
+		}
+	.hr hr {
+		display: none;
+	}
+	.hr {
+		background: #f9fafc;
+		border-radius: 50px;
+		height: 9px;
+		margin: 20px 0px;
+		width:160px;
+	}
 </style>
 
 <SEO {...seoProps} />
@@ -163,6 +193,24 @@
 					whilst getting stats on the audience accessing their assets.
 				</p>
 			</div>
+			<div style="padding:0px 20px;">
+				<Button
+					{...basic}
+					on:click="{() => {
+						goto('/login');
+					}}">Try Me...</Button>
+			</div>
+			<div class="hr"><hr /></div>
+			<br />
+			<div>
+				<dl id="deepLink">
+					<dt><img width="20" src="/img/ico_metamask.svg" alt="metamask" /></dt>
+					<dd><a target="_blank" id="deepLinkURL" href="https://metamask.app.link/dapp/0xtr.ee">
+						Launch with Metamask Mobile</a>
+					</dd>
+				</dl>
+			</div>
+			<br />
 			<form on:submit|preventDefault>
 				<div class="priceField">
 					<label for="priceField">
@@ -183,14 +231,6 @@
 						placeholder="Enter Wallet ID" />
 				</div>
 			</form>
-			<br />
-			<div style="padding:0px 20px;">
-				<Button
-					{...basic}
-					on:click="{() => {
-						goto('/login');
-					}}">Try Me...</Button>
-			</div>
 			<br />
 			<div style="padding:0px 20px;">
 				<Button
