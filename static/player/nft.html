@@ -513,6 +513,8 @@
 			border: 0px;
 			text-indent: 40px;
 			font-size: 1.2em;
+
+			width: 100px;
 		}
 
 		.loadSite .loading {
@@ -539,6 +541,13 @@
 		.nftDisplay {
 			opacity: 1;
 			transition: opacity 0.2s;
+
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			overflow: auto;
 		}
 
 		.loadSite .nftDisplay {
@@ -573,7 +582,8 @@
 			width: 80px;
 		}
 
-		#web3InfoPanel {
+		#web3InfoPanel,
+		#deepLink {
 			display: none;
 			border-top: solid 8px #00c7b6;
 			border-radius: 8px;
@@ -581,6 +591,18 @@
 			margin: 20px;
 			box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
 				rgba(14, 30, 37, 0.12) 0px 2px 4px 0px;
+		}
+
+		#deepLink {
+			display: flex;
+
+		}
+
+		#deepLink a {
+			color: #0d1821;
+			text-decoration: none;
+			font-weight: bold;
+			font-size: 1.1em;
 		}
 	</style>
 
@@ -620,8 +642,16 @@
 			<div style="display:flex;flex:1">
 				<input id="price" type="number" value="" placeholder="Matic" name="offer" />
 			</div>
-			<div id="but">Make an Offer</div>
+			<div>
+				<div id="but">Make an Offer</div>
+			</div>
 		</div>
+		<dl id="deepLink">
+			<dt><img width="40" src="/img/ico_metamask.svg" alt="metamask" /></dt>
+			<dd><a target="_blank" id="deepLinkURL" href="https://metamask.app.link/dapp/0xtr.ee/nft/?1234">Purchase
+					with Metamask</a>
+			</dd>
+		</dl>
 	</div>
 
 	<script>
@@ -1027,19 +1057,21 @@
 		let toeknID = '13881000456214464272594247052417607500385614301131248520949923274483803619329';
 
 		//loop params and apply to viewer
-		for (const param of queryParams) {
-			const keyVal = param.split('=');
-			const key = keyVal[0];
-			const val = decodeURIComponent(keyVal[1].replace(/\+/g, ' '));
+		if (queryParams.length > 1) {
+			for (const param of queryParams) {
+				const keyVal = param.split('=');
+				const key = keyVal[0];
+				const val = decodeURIComponent(keyVal[1].replace(/\+/g, ' '));
 
-			if (key === 'contract') {
-				contractAdd = val;
+				if (key === 'contract') {
+					contractAdd = val;
+				}
+
+				if (key === 'tokenid') {
+					toeknID = val;
+				}
+
 			}
-
-			if (key === 'tokenid') {
-				toeknID = val;
-			}
-
 		}
 		async function connect() {
 			//connect to moralis
@@ -1059,6 +1091,8 @@
 				document.querySelector('#offerPanel').style = 'display:none';
 				document.querySelector('#bidPanel').style = 'display:none';
 				document.querySelector('#web3InfoPanel').style = 'display:block';
+				document.querySelector('#deepLink').style = 'display:block';
+				document.querySelector('#deepLinkURL').href = `https://metamask.app.link/dapp/0xtr.ee/nft/${contractAdd}_${toeknID}`
 			}
 		}
 		connect();
