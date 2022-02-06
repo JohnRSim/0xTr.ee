@@ -508,12 +508,13 @@
 			background-size: 20px;
 			background-repeat: no-repeat;
 			background-position: 12px center;
-			;
+			flex: 1;
 			height: 100%;
 			border: 0px;
 			text-indent: 40px;
 			font-size: 1.2em;
-			width: 160px;
+
+			width: 100px;
 		}
 
 		.loadSite .loading {
@@ -540,6 +541,13 @@
 		.nftDisplay {
 			opacity: 1;
 			transition: opacity 0.2s;
+
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			overflow: auto;
 		}
 
 		.loadSite .nftDisplay {
@@ -573,6 +581,29 @@
 			font-weight: bold;
 			width: 80px;
 		}
+
+		#web3InfoPanel,
+		#deepLink {
+			display: none;
+			border-top: solid 8px #00c7b6;
+			border-radius: 8px;
+			padding: 16px 24px 24px 24px;
+			margin: 20px;
+			box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+				rgba(14, 30, 37, 0.12) 0px 2px 4px 0px;
+		}
+
+		#deepLink {
+			display: flex;
+
+		}
+
+		#deepLink a {
+			color: #0d1821;
+			text-decoration: none;
+			font-weight: bold;
+			font-size: 1.1em;
+		}
 	</style>
 
 </head>
@@ -602,14 +633,25 @@
 					<b>Latest Bid</b>: <span id="latestBid">Loading..</span>
 				</div>
 			</div>
+			<div id="web3InfoPanel">
+				To make an offer on this NFT you need metamask or a browser with web3 capabilties.
+			</div>
 		</header>
 
 		<div id="offerPanel">
-			<div style="flex:1">
+			<div style="display:flex;flex:1">
 				<input id="price" type="number" value="" placeholder="Matic" name="offer" />
 			</div>
-			<div id="but">Make an Offer</div>
+			<div>
+				<div id="but">Make an Offer</div>
+			</div>
 		</div>
+		<dl id="deepLink">
+			<dt><img width="40" src="/img/ico_metamask.svg" alt="metamask" /></dt>
+			<dd><a target="_blank" id="deepLinkURL" href="https://metamask.app.link/dapp/0xtr.ee/nft/?1234">Purchase
+					with Metamask</a>
+			</dd>
+		</dl>
 	</div>
 
 	<script>
@@ -1008,19 +1050,52 @@
 		const serverUrl = 'https://lzf1jh5sx176.usemoralis.com:2053/server';
 		const appId = 'XmxLvKVKIGQZexV2bcx8583lGNlnpY5ksXjiQkM2';
 
+		//Grab params passed in addrss bar
+		const queryParams = window.location.search.substring(1).split('&');
+
+		let contractAdd = '0x2953399124f0cbb46d2cbacd8a89cf0599974963';
+		let toeknID = '13881000456214464272594247052417607500385614301131248520949923274483803619329';
+
+		//loop params and apply to viewer
+		if (queryParams.length > 1) {
+			for (const param of queryParams) {
+				const keyVal = param.split('=');
+				const key = keyVal[0];
+				const val = decodeURIComponent(keyVal[1].replace(/\+/g, ' '));
+
+				if (key === 'contract') {
+					contractAdd = val;
+				}
+
+				if (key === 'tokenid') {
+					toeknID = val;
+				}
+
+			}
+		}
 		async function connect() {
 			//connect to moralis
 			await Moralis.start({ serverUrl, appId });
-			await Moralis.enableWeb3();
+
+			if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+				await Moralis.enableWeb3();
+			}
 			console.log('connected');
 
 			getNFT();
-			getLatestBid();
+
+			if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+				getLatestBid();
+			} else {
+
+				document.querySelector('#offerPanel').style = 'display:none';
+				document.querySelector('#bidPanel').style = 'display:none';
+				document.querySelector('#web3InfoPanel').style = 'display:block';
+				document.querySelector('#deepLink').style = 'display:block';
+				document.querySelector('#deepLinkURL').href = `https://metamask.app.link/dapp/0xtr.ee/nft/${contractAdd}_${toeknID}`
+			}
 		}
 		connect();
-
-		const contractAdd = '0x2953399124f0cbb46d2cbacd8a89cf0599974963';
-		const toeknID = '13881000456214464272594247052417607500385614301131248520949923274483803619329';
 
 		async function getNFT() {
 			console.log('getNFT data');

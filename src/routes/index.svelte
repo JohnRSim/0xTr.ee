@@ -184,7 +184,7 @@
 				</div>
 			</form>
 			<br />
-			<div>
+			<div style="padding:0px 20px;">
 				<Button
 					{...basic}
 					on:click="{() => {
@@ -192,7 +192,7 @@
 					}}">Try Me...</Button>
 			</div>
 			<br />
-			<div>
+			<div style="padding:0px 20px;">
 				<Button
 					{...basic}
 					on:click="{() => {

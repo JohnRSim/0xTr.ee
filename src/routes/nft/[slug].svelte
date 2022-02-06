@@ -36,6 +36,18 @@
 	// svelte
 	import { onDestroy, onMount } from 'svelte';
 
+	//card imgs
+	import ogSquareImageSrc from '$lib/assets/home/home-open-graph-square.jpg';
+	import ogImageSrc from '$lib/assets/home/home-open-graph.jpg';
+	import twitterImageSrc from '$lib/assets/home/home-twitter.jpg';
+	import featuredImageSrc from '$lib/assets/home/home.jpg';
+
+	//img
+	import SEO from '$lib/components/SEO/index.svelte';
+
+	//conf
+	import website from '$lib/config/website';
+
 	//ABI
 	import ABI from '$lib/abi/tree.json';
 
@@ -99,11 +111,14 @@
 	let bidLoading = true;
 	let lastestBidderID = '';
 	let loadingTxt = '';
+	let web3Browser = false;
 	$: latestBid = false;
+	const addressArr = slug.split('_');
 
 	onMount(async () => {
-		Moralis.enableWeb3();
-		const addressArr = slug.split('_');
+		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+			await Moralis.enableWeb3();
+		}
 		console.log(addressArr);
 		sBidding.updateVal('nftContract', addressArr[0]);
 		sBidding.updateVal('tokenId', addressArr[1]);
@@ -122,7 +137,12 @@
 		console.log('getWalletTokenIdTransfers', getWalletTokenIdTransfers);
 		activity = getWalletTokenIdTransfers.result;
 
-		getLatestBid();
+		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+			web3Browser = true;
+			getLatestBid();
+		} else {
+			web3Browser = false;
+		}
 	});
 
 	/**
@@ -250,6 +270,90 @@
 		const getBids = await Moralis.executeFunction(options);
 		console.log('[getBids]', getBids);
 	}
+
+	/**
+	 * shareLink
+	 */
+	function shareLink() {
+		if (
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ||
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.platform)
+		) {
+			// ...
+			if (navigator.share) {
+				navigator
+					.share({
+						title: nftMeta.name,
+						url: window.location.href,
+					})
+					.then(() => {
+						console.log('Thanks for sharing!');
+					})
+					.catch(console.error);
+			} else {
+				window.open(
+					`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree&related=0xtree`,
+				);
+			}
+		} else {
+			window.open(
+				`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree&related=0xtree`,
+			);
+		}
+	}
+
+	const { author, siteUrl } = website;
+
+	let title = 'Home';
+	const breadcrumbs = [
+		{
+			name: 'Home',
+			slug: '',
+		},
+	];
+
+	let metadescription = '';
+	const featuredImageAlt = '';
+	const featuredImage = {
+		url: featuredImageSrc,
+		alt: featuredImageAlt,
+		width: 672,
+		height: 448,
+		caption: 'Home page',
+	};
+	const ogImage = {
+		url: ogImageSrc,
+		alt: featuredImageAlt,
+	};
+	const ogSquareImage = {
+		url: ogSquareImageSrc,
+		alt: featuredImageAlt,
+	};
+
+	const twitterImage = {
+		url: twitterImageSrc,
+		alt: featuredImageAlt,
+	};
+	const entityMeta = {
+		url: `${siteUrl}/`,
+		faviconWidth: 512,
+		faviconHeight: 512,
+		caption: author,
+	};
+	const seoProps = {
+		title,
+		slug: '',
+		entityMeta,
+		datePublished: '2022-01-04T14:19:33.000+0100',
+		lastUpdated: '2022-01-04T14:19:33.000+0100',
+		breadcrumbs,
+		metadescription,
+		featuredImage,
+		ogImage,
+		ogSquareImage,
+		twitterImage,
+		playerURL: `https://www.0xtr.ee/player/nft?contract=${addressArr[0]}&tokenid=${addressArr[1]}`,
+	};
 </script>
 
 <style lang="scss">
@@ -344,85 +448,120 @@
 		background-color: #fff;
 		background-image: url('/img/ico_matic.svg');
 	}
+
+	.share {
+		width: 40px;
+		height: 40px;
+		position: absolute;
+		cursor: pointer;
+		bottom: -20px;
+		z-index: 10;
+		right: 20px;
+		background: #fff; /*#f5f7f5;*/
+		border-radius: 50%;
+		background-image: url('/img/ico_share.svg');
+		background-repeat: no-repeat;
+		background-size: 14px;
+		background-position: center;
+		border: solid 2px #eaeaea;
+	}
+	.web3InfoPanel {
+		border-top: solid 8px #00c7b6;
+		border-radius: 8px;
+		padding: 16px 24px 24px 24px;
+		margin: 20px;
+		box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+			rgba(14, 30, 37, 0.12) 0px 2px 4px 0px;
+	}
 </style>
+
+<SEO {...seoProps} />
 
 <section style="transform: translate3d(0px, 0px, 0px);" id="XT-NFT" class="scrollable gpu_acc">
 	<div style="flex:1;display:flex;flex-direction:column;">
 		<article style="flex:1;" dir="auto">
 			<header>
-				<div class="profileBG" style="{nftImage}"></div>
+				<div class="profileBG" style="{nftImage}">
+					<i on:click="{shareLink}" class="share"></i>
+				</div>
 				<div class="infoPanel">
 					{#if nftMeta.name}
 						<h4>{nftMeta.name}</h4>
 						<p>{nftMeta.description}</p>
 					{/if}
 				</div>
-				<div class="latestBid" class:bidLoaded="{latestBid}">
-					<div><div class="loader"></div></div>
+				{#if web3Browser}
+					<div class="latestBid" class:bidLoaded="{latestBid}">
+						<div><div class="loader"></div></div>
 
-					<div class="txt">
-						{#if latestBid}
-							<b>Latest Bid</b>: {latestBid}
-						{:else}
-							{loadingTxt} Latest Bid
-						{/if}
+						<div class="txt">
+							{#if latestBid}
+								<b>Latest Bid</b>: {latestBid}
+							{:else}
+								{loadingTxt} Latest Bid
+							{/if}
+						</div>
 					</div>
-				</div>
-				{#if showBiddingOptions}
-					<div style="display:flex;align-items:center;justif-content:center">
-						{#if owner}
-							{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
-								{#if latestBid > 0}
+					{#if showBiddingOptions}
+						<div style="display:flex;align-items:center;justif-content:center">
+							{#if owner}
+								{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
+									{#if latestBid > 0}
+										<Button
+											{...bigBlue}
+											on:click="{() => {
+												sModal.showModal({
+													enable: 'true',
+													title: 'Accept Offer',
+													subHeader:
+														'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
+													tpl: 'recievedOffer',
+													buttons: [
+														{
+															text: 'Accept Offer',
+															action: 'acceptOffer',
+														},
+													],
+												});
+											}}">
+											Accept Offer</Button>
+										<Button {...bigBlue} on:click="{rejectLatestBid}">Decline Offer</Button>
+									{/if}
+								{:else}
 									<Button
 										{...bigBlue}
 										on:click="{() => {
+											//updatingBid = true;
 											sModal.showModal({
 												enable: 'true',
-												title: 'Accept Offer',
+												title: 'Make an  Offer',
 												subHeader:
-													'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
-												tpl: 'recievedOffer',
+													'By making an offer you will be sending funds into a holding area until offer has been accepted.',
+												tpl: 'price',
 												buttons: [
 													{
-														text: 'Accept Offer',
-														action: 'acceptOffer',
+														text: 'Make An Offer',
+														action: 'makeOffer',
 													},
 												],
 											});
 										}}">
-										Accept Offer</Button>
-									<Button {...bigBlue} on:click="{rejectLatestBid}">Decline Offer</Button>
-								{/if}
-							{:else}
-								<Button
-									{...bigBlue}
-									on:click="{() => {
-										//updatingBid = true;
-										sModal.showModal({
-											enable: 'true',
-											title: 'Make an  Offer',
-											subHeader:
-												'By making an offer you will be sending funds into a holding area until offer has been accepted.',
-											tpl: 'price',
-											buttons: [
-												{
-													text: 'Make An Offer',
-													action: 'makeOffer',
-												},
-											],
-										});
-									}}">
-									{#if latestBid > 0}
-										Increase Offer
-									{:else}
-										Make an Offer
-									{/if}</Button>
+										{#if latestBid > 0}
+											Increase Offer
+										{:else}
+											Make an Offer
+										{/if}</Button>
 
-								{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
-									<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+									{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
+										<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+									{/if}
 								{/if}
 							{/if}
-						{/if}
+						</div>
+					{/if}
+				{:else}
+					<div class="web3InfoPanel">
+						To make an offer on this NFT you need metamask or a browser with web3 capabilties.
 					</div>
 				{/if}
 				<br />
