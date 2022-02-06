@@ -329,7 +329,7 @@
 		let grabNFTs = {};
 		if (userAccount) {
 			tokenList = await Moralis.Web3API.account.getTokenBalances({ chain: 'mumbai' });
-			grabNFTs = await Moralis.Web3API.account.getNFTs({ chain: 'mumbai' });
+			grabNFTs = await Moralis.Web3API.account.getNFTs({ chain: 'mumbai', address: slug });
 		} else {
 			tokenList = await Moralis.Web3API.account.getTokenBalances({
 				chain: 'mumbai',
