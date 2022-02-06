@@ -38,7 +38,7 @@
 	//components
 	import HeaderTabList from '$lib/components/HeaderTabList.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import { bigBlue, bigPink } from '$lib/components/conf/Buttons.js';
+	import { bigBlue } from '$lib/components/conf/Buttons.js';
 
 	//stores
 	import { modal as sModal } from '../../stores/modal.js';
@@ -812,30 +812,25 @@
 											src="/img/placeholder_moonpay.png"
 											alt="Pay with Moonpay today" />
 
+										<div style="text-align:center">
+											<Button
+												on:click="{() => {
+													sModal.showModal({
+														enable: 'true',
+														title: 'Work in Progress',
+														subHeader:
+															'Didn`t have time to build an integration with Moonpay - but the plan would be to use moonpay to purchase tokens for the user wallet..',
+														buttons: [
+															{
+																text: 'Close',
+																action: 'closeWindow',
+															},
+														],
+													});
+												}}"
+												{...bigBlue}>Purchase Tokens</Button>
+										</div>
 									{/if}
-									<div style="text-align:center">
-										<Button
-											on:click="{() => {
-												sModal.showModal({
-													enable: 'true',
-													title: 'Work in Progress',
-													subHeader:
-														'Didn`t have time to build an integration with Moonpay - but the plan would be to use moonpay to purchase tokens for the user wallet..',
-													buttons: [
-														{
-															text: 'Close',
-															action: 'closeWindow',
-														},
-													],
-												});
-											}}"
-											{...bigBlue}>Purchase Tokens</Button>
-									</div>
-									<div style="text-align:center">
-										<Button
-											on:click="{() => { goto('/uniswap')}}"
-											{...bigPink}>Launch Uniswap</Button>
-									</div>
 								</div>
 							{/if}
 						{:else if tab === 'NFTs' && showNFTsTabContent}
