@@ -61,6 +61,7 @@
 	import { bidding as sBidding } from '../../stores/bidding.js';
 	import { user as sUser } from '../../stores/user.js';
 	import { app as sApp } from '../../stores/app.js';
+	import { nft as sNFT } from '../../stores/nft.js';
 
 	export let tab, slug;
 
@@ -78,7 +79,7 @@
 			path: `/nft/${slug}?tab=Activity`,
 		},
 	];
-	$: nftMeta = {};
+	$: nftMeta = ($sNFT.id[slug])?$sNFT.id[slug]:{};
 	$: owner = '';
 	$: nftImage = nftMeta.image ? `background-image:url("${nftMeta.image}")` : '';
 	$: activity = [];
@@ -117,6 +118,7 @@
 	$: latestBid = false;
 	const addressArr = slug.split('_');
 	let isMounted = false;
+	let loading = true;
 
 	$: if ((isMounted) && ($sApp.ready)) {
 		refresh();
@@ -141,6 +143,8 @@
 		nftMeta = JSON.parse(tokenIdMetadata.metadata);
 		owner = tokenIdMetadata.owner_of;
 		console.log(nftMeta);
+		sNFT.addNFT(slug,nftMeta);
+
 
 		const getWalletTokenIdTransfers = await Moralis.Web3API.token.getWalletTokenIdTransfers(
 			options,
@@ -154,6 +158,7 @@
 		} else {
 			web3Browser = false;
 		}
+		loading = false;
 		getBids();
 	}
 
@@ -533,90 +538,105 @@
 						<p>{nftMeta.description}</p>
 					{/if}
 				</div>
-				{#if web3Browser}
-					<div class="latestBid" class:bidLoaded="{latestBid}">
-						<div><div class="loader"></div></div>
+				{#if (loading)}
+					<div style="text-align:center;">
+						
+						<div class="latestBid" class:bidLoaded="{latestBid}">
+							<div><div class="loader"></div></div>
 
-						<div class="txt">
-							{#if latestBid}
-								<b>Latest Bid</b>: {latestBid}
-							{:else}
-								{loadingTxt} Latest Bid
-							{/if}
+							<div class="txt">
+								Loading Bid Information...
+							</div>
 						</div>
 					</div>
-					{#if showBiddingOptions}
-						<div style="display:flex;align-items:center;justif-content:center">
-							{#if owner}
-								{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
-									{#if latestBid > 0}
+				{:else}
+					{#if web3Browser}
+						<div class="latestBid" class:bidLoaded="{latestBid}">
+							<div><div class="loader"></div></div>
+
+							<div class="txt">
+								{#if latestBid}
+									<b>Latest Bid</b>: {latestBid}
+								{:else}
+									{loadingTxt} Latest Bid
+								{/if}
+							</div>
+						</div>
+						{#if showBiddingOptions}
+							<div style="display:flex;align-items:center;justif-content:center">
+								{#if owner}
+									{#if $sUser.ethAddress.toLowerCase() === owner.toLowerCase()}
+										{#if latestBid > 0}
+											<Button
+												{...bigBlue}
+												on:click="{() => {
+													sModal.showModal({
+														enable: 'true',
+														title: 'Accept Offer',
+														subHeader:
+															'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
+														tpl: 'recievedOffer',
+														buttons: [
+															{
+																text: 'Accept Offer',
+																action: 'acceptOffer',
+															},
+														],
+													});
+												}}">
+												Accept Offer</Button>
+											<Button {...bigBlue} on:click="{rejectLatestBid}">Decline Offer</Button>
+										{/if}
+									{:else}
 										<Button
 											{...bigBlue}
 											on:click="{() => {
+												//updatingBid = true;
 												sModal.showModal({
 													enable: 'true',
-													title: 'Accept Offer',
+													title: 'Make an  Offer',
 													subHeader:
-														'Great! We will handle the NFT swap and send MATIC and Tree tokens to your account!',
-													tpl: 'recievedOffer',
+														'By making an offer you will be sending funds into a holding area until offer has been accepted.',
+													tpl: 'price',
 													buttons: [
 														{
-															text: 'Accept Offer',
-															action: 'acceptOffer',
+															text: 'Make An Offer',
+															action: 'makeOffer',
 														},
 													],
 												});
 											}}">
-											Accept Offer</Button>
-										<Button {...bigBlue} on:click="{rejectLatestBid}">Decline Offer</Button>
-									{/if}
-								{:else}
-									<Button
-										{...bigBlue}
-										on:click="{() => {
-											//updatingBid = true;
-											sModal.showModal({
-												enable: 'true',
-												title: 'Make an  Offer',
-												subHeader:
-													'By making an offer you will be sending funds into a holding area until offer has been accepted.',
-												tpl: 'price',
-												buttons: [
-													{
-														text: 'Make An Offer',
-														action: 'makeOffer',
-													},
-												],
-											});
-										}}">
-										{#if latestBid > 0}
-											Increase Offer
-										{:else}
-											Make an Offer
-										{/if}</Button>
+											{#if latestBid > 0}
+												Increase Offer
+											{:else}
+												Make an Offer
+											{/if}</Button>
 
-									{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
-										<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+										{#if lastestBidderID.toLowerCase() === $sUser.ethAddress.toLowerCase()}
+											<Button {...bigBlue} on:click="{cancelLatestBid}">Cancel Bid</Button>
+										{/if}
 									{/if}
 								{/if}
-							{/if}
+							</div>
+						{/if}
+					{:else}
+						<div class="web3InfoPanel">
+							To make an offer on this NFT you need metamask or a browser with web3 capabilties.
 						</div>
+						<dl id="deepLink">
+							<dt><img width="40" src="/img/ico_metamask.svg" alt="metamask" /></dt>
+							<dd><a target="_blank" id="deepLinkURL" href="https://metamask.app.link/dapp/0xtr.ee/nft/{addressArr[0]}_{addressArr[1]}">
+								Launch Metamask Mobile</a>
+							</dd>
+						</dl>
 					{/if}
-				{:else}
-					<div class="web3InfoPanel">
-						To make an offer on this NFT you need metamask or a browser with web3 capabilties.
-					</div>
-					<dl id="deepLink">
-						<dt><img width="40" src="/img/ico_metamask.svg" alt="metamask" /></dt>
-						<dd><a target="_blank" id="deepLinkURL" href="https://metamask.app.link/dapp/0xtr.ee/nft/{addressArr[0]}_{addressArr[1]}">
-							Launch Metamask Mobile</a>
-						</dd>
-					</dl>
 				{/if}
 				<br />
 				<!--<button on:click="{bids}">bids</button>-->
 			</header>
 			
+			
+			{#if (!loading)}
 			<HeaderTabList
 				on:tab="{(e) => {
 					goto(e.detail.path, { replaceState: true, noscroll: true });
@@ -655,6 +675,7 @@
 					</div>
 				{/if}
 			</div>
+			{/if}
 		</article>
 	</div>
 </section>
