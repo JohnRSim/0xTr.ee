@@ -117,6 +117,7 @@ function manageUser() {
 		reset: () => {
 			if (browser) {
 				localStorage.setItem(`${appConfig.instance}_user`, {
+					hasProfileFromDB:false,
 					disablePanelScroll: false,
 					userInfo: {},
 					ethAddress: '',
@@ -140,6 +141,7 @@ function manageUser() {
 				});
 			}
 			return set({
+				hasProfileFromDB:false,
 				disablePanelScroll: false,
 				userInfo: {},
 				ethAddress: '',
