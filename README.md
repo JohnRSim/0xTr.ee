@@ -14,8 +14,8 @@ https://lzf1jh5sx176.usemoralis.com/
 
 https://user-images.githubusercontent.com/364208/152705255-1cb3bd85-7df3-4664-bcb2-bc6b490fe914.mp4
 
-Click through demo: buying NFTs directly through Twitter
-First in the world to do this integration.. we think so :) with no plugins apart from metamask.
+Click through demo: buying NFTs directly through Twitter<br />
+Are we the first in the world to do this integration.. we think so :) with no plugins apart from metamask.
 
 https://user-images.githubusercontent.com/364208/152705264-15f40b66-f4d0-4b1b-8ab2-a0d9db6a3025.mp4
 
