@@ -171,7 +171,7 @@
 		flex-direction: column;
 		/*padding-bottom: 25px;*/
 	}
-
+/*
 	#headerAnim {
 		margin-top: -10px;
 		border-radius: 100px;
@@ -181,7 +181,7 @@
 		margin: -30px auto;
 		background: #fff;
 		position: relative;
-	}
+	}*/
 
 	header {
 		position: relative;

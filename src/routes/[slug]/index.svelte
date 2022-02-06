@@ -396,11 +396,6 @@
 		display: block;
 		margin: 0px auto;
 	}
-	.hr {
-		background: #f9fafc;
-		border-radius: 100px;
-		height: 6px;
-	}
 
 	.grid {
 		padding: 0;
@@ -629,7 +624,7 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.floatingLinks li.update {
+	/*.floatingLinks li.update {
 		border: solid 4px #f5f7f5;
 		border-radius: 100px;
 		width: 40px;
@@ -638,7 +633,7 @@
 		background-size: 16px;
 		background-repeat: no-repeat;
 		background-position: center;
-	}
+	}*/
 	.bio {
 		margin: 0px;
 	}

@@ -1477,13 +1477,13 @@
 		border: solid 4px #1473e6;
 		background: #fff;
 	}
-
+/*
 	.linkList li .overlayIco {
 		position: absolute;
 		z-index: 5;
 		top: 10px;
 		right: 10px;
-	}
+	}*/
 	.linkList li dl {
 		margin: 0px;
 		display: flex;

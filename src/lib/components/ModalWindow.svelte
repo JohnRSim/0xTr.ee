@@ -171,16 +171,6 @@
 		/*padding-bottom: 25px;*/
 	}
 
-	#headerAnim {
-		margin-top: -10px;
-		border-radius: 100px;
-		overflow: hidden;
-		width: 80px;
-		height: 80px;
-		margin: -30px auto;
-		background: #fff;
-		position: relative;
-	}
 
 	header {
 		position: relative;

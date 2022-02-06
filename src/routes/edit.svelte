@@ -313,6 +313,7 @@
 		background-repeat: no-repeat;
 		background-position: center;
 	}
+	/*
 	.editCollection {
 		position: absolute;
 		right: 20px;
@@ -321,7 +322,7 @@
 		border: solid 4px #f5f7f5;
 		background: #fff;
 		padding: 4px 12px;
-	}
+	}*/
 
 	form {
 		display: flex;
@@ -754,7 +755,7 @@
 				{:else if tab === 'Settings'}
 					<ul class="colSettings">
 						<li class="groupTitle">
-							<label>Chain Setup</label>
+							<label for="chain">Chain Setup</label>
 						</li>
 						<li>
 							<div class="alignCenter" style="flex-direction:column">
@@ -771,7 +772,7 @@
 							<div class="hr"><hr /></div>
 						</li>
 						<li class="groupTitle">
-							<label>Profile Page Display</label>
+							<label for="profile">Profile Page Display</label>
 						</li>
 						<li>
 							<div class="labelRow">
