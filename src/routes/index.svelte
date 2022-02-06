@@ -201,6 +201,14 @@
 							goto('/login');
 						}}">Try Me...</Button>
 				</div>
+				<br />
+				<div style="padding:0px 20px;">
+					<Button
+						{...basic}
+						on:click="{() => {
+							window.location.href = 'https://metamask.app.link/dapp/0xtr.ee';
+						}}">...or Launch in Metamask Mobile</Button>
+				</div>
 				<h4>Introducing 0xTree</h4>
 				<p>
 				0xTree connects your social accounts to your NFT wallet enabling friends and collectors to browse, bid and buy your NFT’s without releasing custody.
