@@ -284,7 +284,7 @@
 				navigator
 					.share({
 						title: nftMeta.name,
-						url: window.location.href,
+						url: `${nftMeta.name} ${window.location.href} via 0xtree_&related=0xtree_`,
 					})
 					.then(() => {
 						console.log('Thanks for sharing!');
@@ -292,12 +292,12 @@
 					.catch(console.error);
 			} else {
 				window.open(
-					`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree&related=0xtree`,
+					`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree_&related=0xtree_`,
 				);
 			}
 		} else {
 			window.open(
-				`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree&related=0xtree`,
+				`https://twitter.com/intent/tweet?text=${nftMeta.name}&url=${window.location.href}&via=0xtree_&related=0xtree_`,
 			);
 		}
 	}
