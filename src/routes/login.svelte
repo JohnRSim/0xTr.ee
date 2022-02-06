@@ -49,10 +49,13 @@
 	 */
 	async function jimsMagic() {
 		//this updates the user profile eth address
+		window.open("https://metamask.io"); 
+		/*
 		let newProfileAddress = '0x........';
 		sUser.updateVal('ethAddress', newProfileAddress);
 		//this redirects to the new user profile page
 		goto(`/${newProfileAddresss}`);
+		*/
 	}
 
 	const { author, siteUrl } = website;
