@@ -109,6 +109,7 @@
 	}
 	h2 > span {
 		color: #737675;
+		font-size: 0.8em;
 	}
 	.priceField {
 		border: solid 2px #eaeaea;
@@ -180,17 +181,11 @@
 			<img src="/img/r2w3.png" alt="Road to Web3" />
 			<div style="padding:0px 20px;">
 				<h2>
-					EthGlobal Hackathon Entry <br />
-					<span>Road to Web3</span>
+					EthGlobal Hackathon<br />
+					<span>Bridging Web2 To Web3</span>
 				</h2>
 				<p>
-					<b>Designed for mobile only current..</b>
-				</p>
-				<p>
-					This entry is based off the <a target="_blank" href="https://www.linktr.ee">linktr.ee</a> web2
-					application and our attempt to show a dApp taking latest web3 concepts with wallets to provide
-					a NFT gateway to allow users to show off and sell and their NFTs in a social environment -
-					whilst getting stats on the audience accessing their assets.
+					0xTr.ee is your Web3 homepage providing a gallery for your digital assets with built in social marketplace.
 				</p>
 			</div>
 			<div style="padding:0px 20px;">
