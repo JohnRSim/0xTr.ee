@@ -8,8 +8,8 @@ const appConfig = { instance: 'DEV' }
  */
 const setup = {
 	chain: 'mumbai',
-	treeContract: '0x5BC4C96c45a341499d400BeECa4c3DFe7a4089a8',
-	treeTokenAddress: '0x5CF531386C449ce7fEA6aef2De6467018FFFdA50',
+	treeContract: '0x87AA74bC1E6846818304480b7f4Fc5ce4e74e266',
+	treeTokenAddress: '0x1F694658898D62b33b7a123E1A519b7A21f44E85',
 	nftContract: '',
 	tokenId: '',
 	latestBidPrice: '',
