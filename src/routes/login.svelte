@@ -44,12 +44,47 @@
 		}
 	}
 
+	let web3AuthInstance = null;
+	onMount(async() => {
+		const polygonMumbaiConfig = {
+			chainNamespace: "eip155",
+			rpcTarget: "https://rpc-mumbai.maticvigil.com",
+			blockExplorer: "https://mumbai-explorer.matic.today",
+			chainId: "0x13881",
+			displayName: "Polygon Mumbai Testnet",
+			ticker: "matic",
+			tickerName: "matic",
+		};
+		const web3authSdk = window.Web3auth;
+
+		web3AuthInstance = new web3authSdk.Web3Auth({
+			chainConfig: polygonMumbaiConfig,
+			clientId: "BMY_C-OsMtW4rJTqqpsygsbOxcpUMQ1jsGQXtXMN2CP4coUsZctqVBOTVw3QAbKCguFxqyxU15vRU7VsA-frDVI" // get your clientId from https://developer.web3auth.io
+		});
+		//subscribeAuthEvents(web3AuthInstance);
+		await web3AuthInstance.initModal();
+	});
+
 	/**
 	 * web3Auth Jim do you stuff here :)
 	 */
 	async function jimsMagic() {
+		console.log('....jimsMagic')
+		const provider = await web3AuthInstance.connect()
+		console.log('...huh',provider );
+		
+        const user = await web3AuthInstance.getUserInfo();
+		console.log(user);
+		const web3 = new Web3(web3AuthInstance.provider);
+      	const address = (await web3.eth.getAccounts())[0];
+      	//const balance = await web3.eth.getBalance(address);
+		  
+		
+		sUser.updateVal('userInfo', user);
+		sUser.updateVal('ethAddress', address);
+		goto(`/${address}`);
 		//this updates the user profile eth address
-		window.open("https://metamask.io"); 
+		//window.open("https://metamask.io"); 
 		/*
 		let newProfileAddress = '0x........';
 		sUser.updateVal('ethAddress', newProfileAddress);
