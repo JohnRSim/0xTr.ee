@@ -4,6 +4,19 @@
 Polygon Contracts for this build can be found here<br />
 https://github.com/JohnRSim/0xtr.ee-Contracts
 
+
+
+https://user-images.githubusercontent.com/364208/152705255-1cb3bd85-7df3-4664-bcb2-bc6b490fe914.mp4
+
+Buying NFTs through twitter
+
+https://user-images.githubusercontent.com/364208/152705264-15f40b66-f4d0-4b1b-8ab2-a0d9db6a3025.mp4
+
+Click through app demo
+
+<img width="314" alt="ssoCapture" src="https://user-images.githubusercontent.com/364208/152705297-5c19ac5b-4f99-4c43-b389-2d7c1392f550.PNG">
+
+
 # Introducing 0xTree
 0xTree connects your social accounts to your NFT wallet enabling friends and collectors to browse, bid and buy your NFT’s without releasing custody.
 
