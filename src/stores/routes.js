@@ -43,7 +43,7 @@ const setup = {
 			headerNavTransparent: true,
 			showLeftPanel: true,
 			showRightPanel: true,
-			showBack: true,
+			showBurger: true,
 		},
 		'/edit': {
 			scrollTarget: '#XT-editProfile.scrollable',

@@ -465,7 +465,8 @@
 		background-position: center;
 		border: solid 2px #eaeaea;
 	}
-	.web3InfoPanel {
+	.web3InfoPanel,
+	#deepLink {
 		border-top: solid 8px #00c7b6;
 		border-radius: 8px;
 		padding: 16px 24px 24px 24px;
@@ -473,6 +474,17 @@
 		box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
 			rgba(14, 30, 37, 0.12) 0px 2px 4px 0px;
 	}
+		#deepLink {
+			display: flex;
+
+		}
+
+		#deepLink a {
+			color: #0d1821;
+			text-decoration: none;
+			font-weight: bold;
+			font-size: 1.1em;
+		}
 </style>
 
 <SEO {...seoProps} />
@@ -563,6 +575,12 @@
 					<div class="web3InfoPanel">
 						To make an offer on this NFT you need metamask or a browser with web3 capabilties.
 					</div>
+					<dl id="deepLink">
+						<dt><img width="40" src="/img/ico_metamask.svg" alt="metamask" /></dt>
+						<dd><a target="_blank" id="deepLinkURL" href="https://metamask.app.link/dapp/0xtr.ee/nft/{addressArr[0]}_{addressArr[1]}">
+							Launch Metamask Mobile</a>
+						</dd>
+					</dl>
 				{/if}
 				<br />
 				<!--<button on:click="{bids}">bids</button>-->

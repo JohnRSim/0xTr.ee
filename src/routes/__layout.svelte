@@ -39,6 +39,7 @@
 	import { modal as sModal } from '../stores/modal.js';
 	import { socialModal as sSocialModal } from '../stores/socialModal.js';
 	import { bidding as sBidding } from '../stores/bidding.js';
+	import { wallet as sWallet } from '../stores/wallet';
 
 	//ABI
 	import ABI from '$lib/abi/tree.json';
@@ -1209,6 +1210,62 @@
 		closeSocialWindow();
 	}
 
+	/**
+	 * deleteAllCookies
+	 **/
+	function deleteAllCookies() {
+		const cookies = document.cookie.split(';');
+
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i];
+			const eqPos = cookie.indexOf('=');
+			const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+			document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+		}
+	}
+
+	/**
+	 * claimWallet
+	*/
+	async function claimWallet() {
+		await Moralis.User.logOut();
+		
+		localStorage.clear();
+		sessionStorage.clear();
+		deleteAllCookies();
+		caches.keys().then(function (keyList) {
+			return Promise.all(
+				keyList.map(function (key) {
+					//if (cachesToKeep.indexOf(key) === -1) {
+					return caches.delete(key);
+					//}
+				}),
+			);
+		});
+		sModal.reset();
+		sSocialModal.reset();
+		sUser.reset();
+		sApp.reset();
+		sRoute.reset();
+		sHistory.reset();
+		sBidding.reset();
+		sWallet.reset();
+		
+		//let user
+		await Moralis.authenticate({ signingMessage: 'Log in to claim wallet' })
+			.then(function (user) {
+				console.log('logged in user:', user);
+				console.log(user.get('ethAddress'));
+				sUser.updateVal('userInfo', user);
+				sUser.updateVal('ethAddress', user.attributes.ethAddress);
+				closeWindow();
+				goto(`/${user.attributes.ethAddress}`);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}
+
 	let userAvatar =
 		'background-image:url("/assets/images/best-medium-format-camera-for-starting-out.jpg")';
 	userAvatar = '';
@@ -1704,6 +1761,7 @@
 	on:closeWindow="{closeWindow}"
 	on:makeOffer="{makeOffer}"
 	on:acceptOffer="{acceptOffer}"
+	on:claimWallet="{claimWallet}"
 	show="{showModal}"
 	header="{modalHeader}"
 	subHeader="{modalSubHeader}"

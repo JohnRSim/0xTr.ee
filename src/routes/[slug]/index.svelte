@@ -44,6 +44,12 @@
 	import { modal as sModal } from '../../stores/modal.js';
 	import { user as sUser } from '../../stores/user';
 	import { wallet as sWallet } from '../../stores/wallet';
+	import { socialModal as sSocialModal } from '../../stores/socialModal.js';
+	import { app as sApp } from '../../stores/app.js';
+	import { route as sRoute } from '../../stores/routes.js';
+	import { history as sHistory } from '../../stores/history.js';
+	import { bidding as sBidding } from '../../stores/bidding.js';
+
 	import { keys } from 'object-hash';
 
 	export let tab, slug;
@@ -251,6 +257,81 @@
 			});
 		}
 		loading = false;
+	}
+
+
+	/**
+	 * deleteAllCookies
+	 **/
+	 function deleteAllCookies() {
+		const cookies = document.cookie.split(';');
+
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i];
+			const eqPos = cookie.indexOf('=');
+			const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+			document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+		}
+	}
+
+	/**
+	 * claimWallet
+	*/
+	async function claimWallet() {
+		if ($sUser.ethAddress) {
+			sModal.showModal({
+				enable: 'true',
+				title: 'User Logged In',
+				subHeader:
+					'We will log you out and allow you to authenticate with the address that matches - this will allow you to claim this wallet.',
+				buttons: [
+					{
+						text: 'Claim Wallet',
+						action: 'claimWallet',
+					},
+					{
+						text: 'Cancel',
+						action: 'closeWindow',
+					},
+				],
+			});
+		} else {
+			await Moralis.User.logOut();
+			
+			localStorage.clear();
+			sessionStorage.clear();
+			deleteAllCookies();
+			caches.keys().then(function (keyList) {
+				return Promise.all(
+					keyList.map(function (key) {
+						//if (cachesToKeep.indexOf(key) === -1) {
+						return caches.delete(key);
+						//}
+					}),
+				);
+			});
+			sModal.reset();
+			sSocialModal.reset();
+			sUser.reset();
+			sApp.reset();
+			sRoute.reset();
+			sHistory.reset();
+			sBidding.reset();
+			sWallet.reset();
+			
+			//let user
+			await Moralis.authenticate({ signingMessage: 'Log in to claim wallet' })
+				.then(function (user) {
+					console.log('logged in user:', user);
+					console.log(user.get('ethAddress'));
+					sUser.updateVal('userInfo', user);
+					sUser.updateVal('ethAddress', user.attributes.ethAddress);
+					goto(`/${user.attributes.ethAddress}`);
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		}
 	}
 </script>
 
@@ -586,7 +667,7 @@
 					</div>
 					<div class="profileInfo">
 						{#if !userAccount}
-							<button class="claimWallet">Claim this Wallet</button>
+							<button on:click="{claimWallet}" class="claimWallet">Claim this Wallet</button>
 						{:else}
 							<ul class="floatingLinks">
 								{#each socialLinks as [site, url], i}
@@ -726,8 +807,8 @@
 									</dl>-->
 									{:else}
 										<img
-											style="margin-top:30px"
-											width="100%"
+											style="margin-top:20px"
+											width="170"
 											src="/img/placeholder_moonpay.png"
 											alt="Pay with Moonpay today" />
 

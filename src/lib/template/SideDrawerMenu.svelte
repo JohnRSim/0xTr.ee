@@ -126,6 +126,7 @@
 		<div id="S-navPanel">
 			<!-- Header -->
 			<header class="main" on:click="{() => {}}">
+				<img width="100%" src="/logo_group.svg" alt="0xtree"/>
 				<form on:submit|preventDefault>
 					<div class="priceField">
 						<label for="priceField">
@@ -138,6 +139,7 @@
 							on:keyup="{(e) => {
 								if (e.key === 'Enter') {
 									dispatchEvent({ action: 'nav', path: `/${searchAddress}` });
+									searchAddress = '';
 								}
 							}}"
 							id="priceField"
