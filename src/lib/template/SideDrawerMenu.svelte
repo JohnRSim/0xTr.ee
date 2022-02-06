@@ -112,6 +112,10 @@
 	.priceField label img {
 		margin: 0px 8px 0px 10px;
 	}
+	.seperator {
+		background:#f5f7f5;
+		height:0px;
+	}
 </style>
 
 {#if isMounted}
@@ -160,6 +164,7 @@
 						}}">
 						Home
 					</li>
+					<li class="seperator"></li>
 					{#if userAccount}
 						<li
 							on:click="{() => {
@@ -175,6 +180,13 @@
 							Login
 						</li>
 					{/if}
+					<li
+						on:click="{() => {
+							dispatchEvent({ action: 'nav', path: `/voting` });
+						}}">
+						DAO Voting
+					</li>
+					<li class="seperator"></li>
 					<li
 						on:click="{() => {
 							dispatchEvent({ action: 'nav', path: `/${treeContract}` });
@@ -193,6 +205,7 @@
 						}}">
 						Test Wallet
 					</li>
+					<li class="seperator"></li>
 					<li
 						on:click="{() => {
 							dispatchEvent({ action: 'nav', path: '/uniswap' });
