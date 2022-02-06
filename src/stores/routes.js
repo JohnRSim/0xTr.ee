@@ -63,6 +63,15 @@ const setup = {
 			showRightPanel: true,
 			showBack: true,
 		},
+		'/voting*': {
+			scrollTarget: '#XT-voting.scrollable',
+			scrollBody: '#XT-voting',
+			displayNav: true,
+			headerNavTransparent: true,
+			showLeftPanel: true,
+			showRightPanel: true,
+			showBurger: true,
+		},
 	}
 };
 
