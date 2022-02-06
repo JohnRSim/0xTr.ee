@@ -704,6 +704,34 @@
 	.bio {
 		margin: 0px;
 	}
+	
+	.loader {
+		min-width: 40px;
+		height: 40px;
+		background-color: #383c3a;
+		background-image: url('/img/spinner_oval.svg');
+		background-size: 24px;
+		background-position: center;
+		background-repeat: no-repeat;
+		border-radius: 6px;
+		transition: background 0.2s;
+	}
+
+	.loadingWallet {
+		display: flex;
+		border: solid 4px #eaeaea;
+		border-radius: 100px;
+		margin: 20px 20px 10px;
+		overflow: hidden;
+		background: #fff;
+	}
+	.loadingWallet .txt {
+		padding-left: 10px;
+		display: flex;
+		align-items: center;
+		font-weight: bold;
+	}
+
 </style>
 
 {#if isMounted}
@@ -766,7 +794,13 @@
 					<div style="width:100%;">
 						{#if tab === 'Tokens' && showTokensTabContent}
 							{#if loading && tokenList.length === 0}
-								...loading
+								<div class="loadingWallet">
+									<div><div class="loader"></div></div>
+
+									<div class="txt">
+										Loading Wallet...
+									</div>
+								</div>
 							{:else}
 								<div class="tokenList">
 									{#if tokenList && tokenList.length > 0}
@@ -897,7 +931,14 @@
 							{/if}
 						{:else if tab === 'NFTs' && showNFTsTabContent}
 							{#if loading && NFTs.length === 0}
-								...loading
+								
+								<div class="loadingWallet">
+									<div><div class="loader"></div></div>
+
+									<div class="txt">
+										Loading Wallet...
+									</div>
+								</div>
 							{:else}
 								<ul class="grid">
 									{#if NFTs && NFTs.length > 0}

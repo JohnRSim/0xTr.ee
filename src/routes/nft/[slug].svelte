@@ -647,20 +647,24 @@
 			<div style="width:100%; padding:0px 20px;">
 				{#if tab === 'Offers'}
 					{#if (bids) && (bids.length > 0)}
+					<div class="activity">
+						<div class="hr"><hr /></div>
 						{#each bids as bid}
 						<div style="flex">
-							<div>{bid.bidder}</div>
+							<div><b>{bid.bidder}</b></div>
 							<div>
 								{#if window && window._ethers}
-									{window._ethers.utils.formatEther(bid.price)} MATIC<br />
+									<b>{window._ethers.utils.formatEther(bid.price)} MATIC</b><br />
 								{/if}
 							</div>
 						</div>
+						<div class="hr"><hr /></div>
 							
 						{/each}
+					</div>
 					{/if}
 				{:else if tab === 'History'}
-					History
+					<div style="text-align:center">Work in progress.. </div>
 				{:else if tab === 'Activity'}
 					<div class="activity">
 						<div class="hr"><hr /></div>
