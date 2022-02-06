@@ -1,0 +1,41 @@
+{
+  "name": "0xtree-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for 0xTree",
+  "dependencies": {
+    "@ethersproject/experimental": "^5.5.0",
+    "@nomiclabs/hardhat-ethers": "^2.0.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "@openzeppelin/contracts": "4.3.2",
+    "@openzeppelin/contracts-upgradeable": "4.3.2",
+    "@openzeppelin/hardhat-upgrades": "1.10.0",
+    "@uniswap/v2-core": "1.0.1",
+    "@uniswap/v2-periphery": "1.1.0-beta.0",
+    "@uniswap/v3-periphery": "^1.4.0",
+    "@uniswap/v3-sdk": "^3.8.2",
+    "chai": "^4.3.4",
+    "dotenv": "^14.2.0",
+    "ethereum-waffle": "^3.2.0",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.8.3"
+  },
+  "main": "tests/test.js",
+  "scripts": {
+    "test": "tests/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohnRSim/0xtr.ee-Contracts.git"
+  },
+  "keywords": [
+    "Solidity",
+    "Web3",
+    "EthGlobal"
+  ],
+  "author": "James Bachini",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JohnRSim/0xtr.ee-Contracts/issues"
+  },
+  "homepage": "https://github.com/JohnRSim/0xtr.ee-Contracts#readme"
+}
