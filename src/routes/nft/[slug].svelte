@@ -124,42 +124,49 @@
 		refresh();
 	}
 
+
 	onMount(async () => {
 		isMounted = true;
 	});
 
+	let runOnce = true;
 	async function refresh() {
-		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
-			await Moralis.enableWeb3();
+		if (runOnce) {
+			runOnce = false;
+			
+			if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+				await Moralis.enableWeb3();
+			}
+			console.log(addressArr);
+			sBidding.updateVal('nftContract', addressArr[0]);
+			sBidding.updateVal('tokenId', addressArr[1]);
+			const options = { address: addressArr[0], token_id: addressArr[1], chain: 'mumbai' };
+			//const metaData = await Moralis.Web3API.token.getNFTMetadata(options);
+			//const tokenMetadata = await Moralis.Web3API.token.getTokenMetadata(options);
+			const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+			console.log('-------------', tokenIdMetadata);
+			nftMeta = JSON.parse(tokenIdMetadata.metadata);
+			owner = tokenIdMetadata.owner_of;
+			console.log(nftMeta);
+			sNFT.addNFT(slug,nftMeta);
+
+
+			const getWalletTokenIdTransfers = await Moralis.Web3API.token.getWalletTokenIdTransfers(
+				options,
+			);
+			console.log('getWalletTokenIdTransfers', getWalletTokenIdTransfers);
+			activity = getWalletTokenIdTransfers.result;
+
+			if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+				web3Browser = true;
+				getLatestBid();
+			} else {
+				web3Browser = false;
+			}
+			loading = false;
+			getBids();
+			
 		}
-		console.log(addressArr);
-		sBidding.updateVal('nftContract', addressArr[0]);
-		sBidding.updateVal('tokenId', addressArr[1]);
-		const options = { address: addressArr[0], token_id: addressArr[1], chain: 'mumbai' };
-		//const metaData = await Moralis.Web3API.token.getNFTMetadata(options);
-		//const tokenMetadata = await Moralis.Web3API.token.getTokenMetadata(options);
-		const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
-		console.log('-------------', tokenIdMetadata);
-		nftMeta = JSON.parse(tokenIdMetadata.metadata);
-		owner = tokenIdMetadata.owner_of;
-		console.log(nftMeta);
-		sNFT.addNFT(slug,nftMeta);
-
-
-		const getWalletTokenIdTransfers = await Moralis.Web3API.token.getWalletTokenIdTransfers(
-			options,
-		);
-		console.log('getWalletTokenIdTransfers', getWalletTokenIdTransfers);
-		activity = getWalletTokenIdTransfers.result;
-
-		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
-			web3Browser = true;
-			getLatestBid();
-		} else {
-			web3Browser = false;
-		}
-		loading = false;
-		getBids();
 	}
 
 	/**
