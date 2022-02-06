@@ -1,5 +1,5 @@
+![image](https://user-images.githubusercontent.com/364208/152705668-2caff335-e3b2-4877-9140-55f10848714a.png)
 
-![image](https://user-images.githubusercontent.com/364208/152705630-cbfa59a3-08f5-422f-b7a1-175b5343448a.png)
 
 # 0xtree (Road to Web3)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ee43faaa-79f5-4f70-829c-96595b225330/deploy-status)](https://app.netlify.com/sites/0xtree/deploys)
