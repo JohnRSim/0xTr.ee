@@ -40,6 +40,31 @@ export const bigBlue = {
 	secondaryBorder: 'solid 3px #F5F7F5',
 	secondaryColor: '#5A576A'
 }
+export const bigPink = {
+	rippleBlur: 2,
+	speed: 500,
+	color: '#fff',
+	colorHover: '#fff',
+	fontSize: '1.04em',
+	bgColor: '255,0,122',
+	bgColorOpacity: 1,
+	bgHover: '255,0,122',
+	bgActive: '255,0,122',
+	rippleColor: '#000',
+	round: '100px',
+	height: '50px',
+	width: 'auto',
+	margin: '10px 20px',
+	padding: '0px 32px',
+	sizeIn: 20,
+	opacityIn: 0.2,
+	shadow: 'none',
+	shadowHover: 'none',
+	shadowActive: 'none',
+	secondaryBGColor: '#fff',
+	secondaryBorder: 'solid 3px #F5F7F5',
+	secondaryColor: '#5A576A'
+}
 export const basic = {
 	rippleBlur: 2,
 	speed: 500,
