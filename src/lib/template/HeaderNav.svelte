@@ -67,8 +67,16 @@
 	}
 
 	.hamburger .ico {
-		-webkit-mask-image: url('/img/ico_hamburger.svg');
+		-webkit-mask-image: unset;
+		background-color: #f5f7f5;
+		background-image: url('/img/ico_hamburger.svg');
+		background-position: 3px 0px;
 		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background-size: 11px;
+		background-repeat: no-repeat;
+		background-position: center;
 	}
 
 	.back {

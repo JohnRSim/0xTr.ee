@@ -25,7 +25,8 @@ const setup = {
 		showTokens: true,
 		showNFTs: true,
 		showLinks: false,
-	}
+	},
+	links: {}
 };
 
 /**
@@ -70,6 +71,29 @@ function manageUser() {
 		},
 
 		/**
+		 * addLink
+		 */
+		addLink: (key, val) => {
+			console.info('[user][addLink]', key, val);
+			update((a) => {
+				a.links[key] = val;
+				return a;
+			});
+		},
+
+		/**
+		 * removeLink
+		 */
+		removeLink: (key) => {
+			console.info('[user][removeLink]', key);
+			update((a) => {
+				//console.log('update',a,data)
+				delete a.links[key];
+				return a;
+			});
+		},
+
+		/**
 		 * clearUser
 		 */
 		clearUser: () => {
@@ -106,11 +130,12 @@ function manageUser() {
 							twitter: '',
 							youTube: '',
 							instagram: '',
-						}
+						},
+						showTokens: true,
+						showNFTs: true,
+						showLinks: false,
 					},
-					showTokens: true,
-					showNFTs: true,
-					showLinks: false,
+					links: {}
 				});
 			}
 			return set({
@@ -132,7 +157,8 @@ function manageUser() {
 					showTokens: true,
 					showNFTs: true,
 					showLinks: false,
-				}
+				},
+				links: {}
 			});
 		},
 	};

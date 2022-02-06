@@ -44,6 +44,13 @@
 	import { modal as sModal } from '../../stores/modal.js';
 	import { user as sUser } from '../../stores/user';
 	import { wallet as sWallet } from '../../stores/wallet';
+	import { socialModal as sSocialModal } from '../../stores/socialModal.js';
+	import { app as sApp } from '../../stores/app.js';
+	import { route as sRoute } from '../../stores/routes.js';
+	import { history as sHistory } from '../../stores/history.js';
+	import { bidding as sBidding } from '../../stores/bidding.js';
+
+	import { keys } from 'object-hash';
 
 	export let tab, slug;
 
@@ -251,6 +258,81 @@
 		}
 		loading = false;
 	}
+
+
+	/**
+	 * deleteAllCookies
+	 **/
+	 function deleteAllCookies() {
+		const cookies = document.cookie.split(';');
+
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i];
+			const eqPos = cookie.indexOf('=');
+			const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+			document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+		}
+	}
+
+	/**
+	 * claimWallet
+	*/
+	async function claimWallet() {
+		if ($sUser.ethAddress) {
+			sModal.showModal({
+				enable: 'true',
+				title: 'User Logged In',
+				subHeader:
+					'We will log you out and allow you to authenticate with the address that matches - this will allow you to claim this wallet.',
+				buttons: [
+					{
+						text: 'Claim Wallet',
+						action: 'claimWallet',
+					},
+					{
+						text: 'Cancel',
+						action: 'closeWindow',
+					},
+				],
+			});
+		} else {
+			await Moralis.User.logOut();
+			
+			localStorage.clear();
+			sessionStorage.clear();
+			deleteAllCookies();
+			caches.keys().then(function (keyList) {
+				return Promise.all(
+					keyList.map(function (key) {
+						//if (cachesToKeep.indexOf(key) === -1) {
+						return caches.delete(key);
+						//}
+					}),
+				);
+			});
+			sModal.reset();
+			sSocialModal.reset();
+			sUser.reset();
+			sApp.reset();
+			sRoute.reset();
+			sHistory.reset();
+			sBidding.reset();
+			sWallet.reset();
+			
+			//let user
+			await Moralis.authenticate({ signingMessage: 'Log in to claim wallet' })
+				.then(function (user) {
+					console.log('logged in user:', user);
+					console.log(user.get('ethAddress'));
+					sUser.updateVal('userInfo', user);
+					sUser.updateVal('ethAddress', user.attributes.ethAddress);
+					goto(`/${user.attributes.ethAddress}`);
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		}
+	}
 </script>
 
 <style>
@@ -313,11 +395,6 @@
 	.tokenList img {
 		display: block;
 		margin: 0px auto;
-	}
-	.hr {
-		background: #f9fafc;
-		border-radius: 100px;
-		height: 6px;
 	}
 
 	.grid {
@@ -547,7 +624,7 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.floatingLinks li.update {
+	/*.floatingLinks li.update {
 		border: solid 4px #f5f7f5;
 		border-radius: 100px;
 		width: 40px;
@@ -556,6 +633,9 @@
 		background-size: 16px;
 		background-repeat: no-repeat;
 		background-position: center;
+	}*/
+	.bio {
+		margin: 0px;
 	}
 </style>
 
@@ -582,7 +662,7 @@
 					</div>
 					<div class="profileInfo">
 						{#if !userAccount}
-							<button class="claimWallet">Claim this Wallet</button>
+							<button on:click="{claimWallet}" class="claimWallet">Claim this Wallet</button>
 						{:else}
 							<ul class="floatingLinks">
 								{#each socialLinks as [site, url], i}
@@ -722,8 +802,8 @@
 									</dl>-->
 									{:else}
 										<img
-											style="margin-top:30px"
-											width="100%"
+											style="margin-top:20px"
+											width="170"
 											src="/img/placeholder_moonpay.png"
 											alt="Pay with Moonpay today" />
 
@@ -853,6 +933,78 @@
 							{/if}
 						{:else if tab === 'Links' && showLinksTabContent}
 							<ul class="linkList">
+								{#each Object.keys($sUser.links) as link}
+									{#if $sUser.links[link].tpl === 'simple'}
+										<li
+											on:click="{() => {
+												goto($sUser.links[link].url);
+											}}">
+											<dl>
+												<dt class="mini">
+													{#if $sUser.links[link].url.includes('youtube')}
+														<img width="26" src="/img/ico_youtube.svg" alt="Youtube" />
+													{/if}
+													{#if $sUser.links[link].url.includes('twitter')}
+														<img width="26" src="/img/ico_twitter.svg" alt="twitter" />
+													{/if}
+													{#if $sUser.links[link].url.includes('instagram')}
+														<img width="26" src="/img/ico_instagram.svg" alt="instagram" />
+													{/if}
+												</dt>
+												<dd>{$sUser.links[link].title}</dd>
+											</dl>
+										</li>
+									{/if}
+									{#if $sUser.links[link].tpl === 'description'}
+										<li
+											on:click="{() => {
+												goto($sUser.links[link].url);
+											}}">
+											{#if $sUser.links[link].url.includes('youtube')}
+												<img
+													class="overlayIco"
+													width="26"
+													src="/img/ico_youtube.svg"
+													alt="Youtube" />
+											{/if}
+											{#if $sUser.links[link].url.includes('twitter')}
+												<img
+													class="overlayIco"
+													width="26"
+													src="/img/ico_twitter.svg"
+													alt="twitter" />
+											{/if}
+											{#if $sUser.links[link].url.includes('instagram')}
+												<img
+													class="overlayIco"
+													width="26"
+													src="/img/ico_instagram.svg"
+													alt="instagram" />
+											{/if}
+											<dl>
+												<dt class="mini">
+													<img width="100" src="/tmp/example.png" alt="Youtube" />
+												</dt>
+												<dd>
+													<div>
+														{$sUser.links[link].title}<br />
+														<p>{$sUser.links[link].description}</p>
+													</div>
+												</dd>
+											</dl>
+										</li>
+									{/if}
+									{#if $sUser.links[link].tpl === 'gallery'}
+										<li
+											on:click="{() => {
+												goto($sUser.links[link].url);
+											}}">
+											WIP<br />
+											{$sUser.links[link].title}
+										</li>
+									{/if}
+								{/each}
+								<!--
 								<li>
 									<img class="overlayIco" width="26" src="/img/ico_youtube.svg" alt="Youtube" />
 									<dl>
@@ -890,7 +1042,7 @@
 										</dt>
 										<dd>The Imperial Collection</dd>
 									</dl>
-								</li>
+								</li>-->
 							</ul>
 						{/if}
 					</div>

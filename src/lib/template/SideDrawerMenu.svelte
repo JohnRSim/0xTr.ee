@@ -112,6 +112,10 @@
 	.priceField label img {
 		margin: 0px 8px 0px 10px;
 	}
+	.seperator {
+		background:#f5f7f5;
+		height:0px;
+	}
 </style>
 
 {#if isMounted}
@@ -126,6 +130,10 @@
 		<div id="S-navPanel">
 			<!-- Header -->
 			<header class="main" on:click="{() => {}}">
+				<img
+				on:click="{() => {
+					dispatchEvent({ action: 'nav', path: '/' });
+				}}" width="100%" src="/logo_group.svg" alt="0xtree"/>
 				<form on:submit|preventDefault>
 					<div class="priceField">
 						<label for="priceField">
@@ -138,6 +146,7 @@
 							on:keyup="{(e) => {
 								if (e.key === 'Enter') {
 									dispatchEvent({ action: 'nav', path: `/${searchAddress}` });
+									searchAddress = '';
 								}
 							}}"
 							id="priceField"
@@ -158,6 +167,7 @@
 						}}">
 						Home
 					</li>
+					<li class="seperator"></li>
 					{#if userAccount}
 						<li
 							on:click="{() => {
@@ -165,7 +175,27 @@
 							}}">
 							My Wallet
 						</li>
+					{:else}
+						<li
+							on:click="{() => {
+								dispatchEvent({ action: 'nav', path: `/login` });
+							}}">
+							Login
+						</li>
 					{/if}
+					<li
+					on:click="{() => {
+						dispatchEvent({ action: 'nav', path: `/voting` });
+					}}">
+					DAO Voting</li>
+					<li class="seperator"></li>
+					<li
+						on:click="{() => {
+							dispatchEvent({ action: 'nav', path: `/voting` });
+						}}">
+						DAO Voting
+					</li>
+					<li class="seperator"></li>
 					<li
 						on:click="{() => {
 							dispatchEvent({ action: 'nav', path: `/${treeContract}` });
@@ -184,6 +214,7 @@
 						}}">
 						Test Wallet
 					</li>
+					<li class="seperator"></li>
 					<li
 						on:click="{() => {
 							dispatchEvent({ action: 'nav', path: '/uniswap' });

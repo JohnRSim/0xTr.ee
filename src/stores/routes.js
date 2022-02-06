@@ -43,7 +43,7 @@ const setup = {
 			headerNavTransparent: true,
 			showLeftPanel: true,
 			showRightPanel: true,
-			showBack: true,
+			showBurger: true,
 		},
 		'/edit': {
 			scrollTarget: '#XT-editProfile.scrollable',
@@ -62,6 +62,15 @@ const setup = {
 			showLeftPanel: true,
 			showRightPanel: true,
 			showBack: true,
+		},
+		'/voting*': {
+			scrollTarget: '#XT-voting.scrollable',
+			scrollBody: '#XT-voting',
+			displayNav: true,
+			headerNavTransparent: true,
+			showLeftPanel: true,
+			showRightPanel: true,
+			showBurger: true,
 		},
 	}
 };

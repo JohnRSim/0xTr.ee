@@ -29,24 +29,15 @@
 		margin: 0px;
 		text-align: left;
 		align-items: center;
+		padding:0px 20px
 	}
 </style>
 
-<section style="transform: translate3d(0px, 60px, 0px);" id="XT-home" class="scrollable gpu_acc">
+<section style="transform: translate3d(0px, 60px, 0px);" id="XT-voting" class="scrollable gpu_acc">
 	<div style="flex:1;display:flex;flex-direction:column;">
-		<iframe
-			title=""
-			src="https://app.uniswap.org/#/swap?chain=polygon_mumbai&outputCurrency=0x055312595daEB1004c6590bD8285Ff15bbC6F283&inputCurrency=0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889&exactAmount=0.0001"
-			height="660px"
-			width="100%"
-			style="flex:1;
-    border: 0;
-    margin: 0 auto;
-    margin-bottom: .5rem;
-    display: block;
-    border-radius: 10px;
-    max-width: 960px;
-    min-width: 300px;
-  "></iframe>
+		<article style="flex:1;" dir="auto">
+			<h4>DAO Voting Panel</h4>
+			<p>Use your Tree tokens to vote for the next feature to be developed on 0xTr.ee</p>
+		</article>
 	</div>
 </section>
