@@ -171,6 +171,12 @@
 		margin: 20px 0px;
 		width:160px;
 	}
+	.mini {
+		font-size:0.875em;
+	}
+	p {
+		line-height:1.44;
+	}
 </style>
 
 <SEO {...seoProps} />
@@ -185,15 +191,69 @@
 					<span>Bridging Web2 To Web3</span>
 				</h2>
 				<p>
-					0xTr.ee is your Web3 homepage providing a gallery for your digital assets with built in social marketplace.
+					<b>Designed for mobile only current..</b><br />
+					<span class="mini">Also deployed to moralis - https://lzf1jh5sx176.usemoralis.com/</span>
 				</p>
-			</div>
-			<div style="padding:0px 20px;">
-				<Button
-					{...basic}
-					on:click="{() => {
-						goto('/login');
-					}}">Try Me...</Button>
+				<div style="padding:0px 20px;">
+					<Button
+						{...basic}
+						on:click="{() => {
+							goto('/login');
+						}}">Try Me...</Button>
+				</div>
+				<h4>Introducing 0xTree</h4>
+				<p>
+				0xTree connects your social accounts to your NFT wallet enabling friends and collectors to browse, bid and buy your NFT’s without releasing custody.
+				</p><p>
+				You can crawl any wallet address using the domain 0xTr.ee and browse a gallery of all the NFT’s that a wallet holds. It’s live. You can pause the video and try it now with any Polygon wallet.
+			</p><p>
+				Owners can publish their 0xTree spaces to social media platforms to show off their collections and galleries can be claimed and customized via web3 login by the wallet owner.
+			</p><p>
+				Social sharing is taken to a new level with Twitter custom cards which bring NFT’s to life natively within the Twitter app. There is currently no better way to share your latest purchase.
+			</p><p>
+				Linktr.ee provided a simple solution for sharing all our social profiles in a single space. It has grown to become a staple of web2 technologies and receives 145 million visitors every month.
+			</p><p>
+				We want 0xTree to become the industry standard way to share and display NFT’s bridging web2.0 social platforms with emerging web3 technologies.
+			</p>
+				<h4>A New Way To Trade NFT’s</h4>
+			<p>
+				Imagine being able to place an offer for any NFT without the owner listing it on a 3rd party marketplace. A buyer can stake funds in a smart contract to place a bid on any NFT in any wallet. The owner will be notified when browsing their own wallet address that there is an offer pending which they can accept, reject or ignore.
+			</p><p>
+				Opensea is currently the largest NFT marketplace with over 500,000 users and $4B in monthly trading volume*. Our product differentiates itself by flipping the initiative from the seller to the buyer.
+			</p><p>
+				Trading fees are lower too, 90% lower in fact, incentivising NFT traders to use a truly decentralized product that doesn’t need to charge 2.5% on every trade.
+			</p>
+
+				<h4>TREE Tokenomics</h4>
+			<p>
+				Fee revenues go straight from the smart contract into a Uniswap liquidity pool increasing liquidity for the TREE governance token and providing incentives for stakeholder to participate.
+			</p><p>
+				If 0xTree can gain traction to become key infrastructure in the NFT space then governance of that protocol will become very valuable, as will the liquidity from fees.
+			</p><p>
+				0xTree and the TREE token will go live with a truly fair launch tokenomic program. No pre-mines, no team allocation, no vested investor tokens. The project will incentivise early growth through the distribution of its governance token based on trading volumes. This will provide the necessary traction needed to get sellers to regularly check their 0xTree wallets for bids.
+			</p><p>
+				By distributing the token to users we further empower a community of NFT traders to go out and promote the project to new participants.
+			</p>
+				<h4>TreeDAO Community Governance</h4>
+			<p>
+				Tree token holders are the stakeholders and governors of the protocol. The tree token has native functions built in for voting and delegating votes.
+			</p><p>
+				Proposals could include future developments of the platform. We were limited by the timeframe for the hackathon but future development opportunities could include:-
+			</p><p>
+				Wallet to Wallet on-chain messaging, direct communication between buyers & sellers
+			</p><p>
+				Multi-chain expansions to new blockchain ecosystems
+			</p><p>
+				Integration of social tokens, gaming tokens and other emerging digital assets
+			</p><p>
+				Staking pools for the TREE token and TREE-MATIC LP tokens
+			</p><p>
+				Funded governance proposals rewarding developers and attracting talent
+			</p><p>
+				Cross-chain bridging systems to move & trade non-fungible assets between chains
+			</p><p>
+				The prioritization of these opportunities will be at the discretion of the community.
+			</p>
 			</div>
 			<div class="hr"><hr /></div>
 			<br />
