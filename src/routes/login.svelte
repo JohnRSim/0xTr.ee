@@ -44,6 +44,17 @@
 		}
 	}
 
+	/**
+	 * web3Auth Jim do you stuff here :)
+	 */
+	async function jimsMagic() {
+		//this updates the user profile eth address
+		let newProfileAddress = '0x........';
+		sUser.updateVal('ethAddress', newProfileAddress);
+		//this redirects to the new user profile page
+		goto(`/${newProfileAddresss}`);
+	}
+
 	const { author, siteUrl } = website;
 	basic.width = '400px';
 	let title = 'Home';
@@ -219,7 +230,7 @@
 
 				<div id="XT-create">
 					<img src="/img/ico_socialcons.svg" alt="" />
-					<Button {...basic}>Create wallet</Button>
+					<Button {...basic} on:click="{jimsMagic}">Create wallet</Button>
 				</div>
 
 				<footer>

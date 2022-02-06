@@ -1603,7 +1603,7 @@
 		</div>
 	{/if}
 	{#if socialModalTpl === 'addDetail'}
-		<div class="contentWrapper hasShadow" style="min-height: 90px;">
+		<div class="contentWrapper hasShadow" style="padding-bottom: 2px;">
 			<h4>Create link</h4>
 			<p>Update the following fields:</p>
 		</div>

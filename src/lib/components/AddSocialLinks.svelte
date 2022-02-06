@@ -161,6 +161,7 @@
 		overflow: visible;
 		background: #fff;
 		max-width: 600px;
+		overflow: hidden;
 	}
 
 	#modelWrapper {

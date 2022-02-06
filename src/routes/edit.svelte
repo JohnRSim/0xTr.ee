@@ -42,6 +42,9 @@
 	import HeaderTabList from '$lib/components/HeaderTabList.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import { bigBlue } from '$lib/components/conf/Buttons.js';
+	import Toggle from '$lib/components/Toggle2.svelte';
+	import { toggle_class } from 'svelte/internal';
+	import { UserCheckIcon } from 'svelte-feather-icons';
 
 	export let tab;
 
@@ -59,6 +62,10 @@
 			path: `/edit?tab=Settings`,
 		},
 	];
+
+	$: showTokens = $sUser.profile.showTokens;
+	$: showNFTs = $sUser.profile.showNFTs;
+	$: showLinks = $sUser.profile.showLinks;
 
 	let claimedWallet = true;
 	$: userAvatar = $sUser.profile.profilePic
@@ -141,6 +148,16 @@
 		sBidding.reset();
 		sWallet.reset();
 		window.location = '/';
+	}
+
+	/**
+	 * toggle
+	 */
+	function toggle(toggleName, val) {
+		console.log('toggle', toggleName, val);
+		let userProfile = $sUser.profile;
+		userProfile[toggleName] = val;
+		sUser.updateVal('profile', userProfile);
 	}
 </script>
 
@@ -360,6 +377,62 @@
 		font-weight: bold;
 		font-size: 1.2em;
 	}
+	.colSettings {
+		width: 100%;
+		margin: 0px;
+		padding: 0px 20px;
+	}
+
+	.colSettings li {
+		list-style: none;
+		border-bottom: 0.1px solid var(--color-seperator-sidenav);
+	}
+	.colSettings li:first-child {
+		border-top: 0.1px solid var(--color-seperator-sidenav);
+	}
+	.labelRow {
+		display: flex;
+		min-height: 64px;
+	}
+	.labelRow .label {
+		align-self: center;
+		flex: 1;
+		padding: 0px 20px;
+		text-transform: uppercase;
+	}
+	.labelRow .val {
+		align-self: center;
+		display: flex;
+		padding: 0px 15px;
+	}
+	.groupTitle {
+		background: var(--bg-search);
+	}
+	.groupTitle label {
+		padding: 10px 20px;
+		font-size: 1.3em;
+		margin: 0px;
+		display: block;
+		font-weight: bold;
+	}
+	h4 {
+		margin: 0px;
+	}
+	.hr hr {
+		display: none;
+	}
+	.hr {
+		background: #f9fafc;
+		border-radius: 50px;
+		height: 9px;
+		margin: 20px 0px;
+	}
+
+	.alignCenter {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 </style>
 
 {#if isMounted}
@@ -531,24 +604,78 @@
 						</dl>
 					</div>
 				{:else if tab === 'Settings'}
-					<div>
-						<h4>Selected Chain:</h4>
-						<select>
-							<option value="polygon">Polgyon Mainet</option>
-							<option selected value="mumbai">Mumbai Test Network</option>
-							<option value="ethereum">Ethereum Mainet</option>
-							<option value="rinkeby">Rinkeby Test Network</option>
-						</select>
-					</div>
-					<div>
-						<h4>Display:</h4>
-						Tokens<br />
-						NFTs<br />
-						Links<br />
-					</div>
-					<div>
-						<button class="save" on:click="{reset}">Reset</button>
-					</div>
+					<ul class="colSettings">
+						<li class="groupTitle">
+							<label>Chain Setup</label>
+						</li>
+						<li>
+							<div class="alignCenter" style="flex-direction:column">
+								<h4>Selected Chain:</h4>
+								<select>
+									<option value="polygon">Polgyon Mainet</option>
+									<option selected value="mumbai">Mumbai Test Network</option>
+									<option value="ethereum">Ethereum Mainet</option>
+									<option value="rinkeby">Rinkeby Test Network</option>
+								</select>
+							</div>
+						</li>
+						<li>
+							<div class="hr"><hr /></div>
+						</li>
+						<li class="groupTitle">
+							<label>Profile Page Display</label>
+						</li>
+						<li>
+							<div class="labelRow">
+								<div class="label">Show Tokens</div>
+								<div class="val">
+									<Toggle
+										on:toggle="{(e) => {
+											toggle('showTokens', e.detail.val);
+										}}"
+										inputVal="{showTokens}"
+										disableClick="{true}" />
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="labelRow">
+								<div class="label">Show NFTs</div>
+								<div class="val">
+									<Toggle
+										on:toggle="{(e) => {
+											toggle('showNFTs', e.detail.val);
+										}}"
+										inputVal="{showNFTs}"
+										disableClick="{true}" />
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="labelRow">
+								<div class="label">Show Links</div>
+								<div class="val">
+									<Toggle
+										on:toggle="{(e) => {
+											toggle('showLinks', e.detail.val);
+										}}"
+										inputVal="{showLinks}"
+										disableClick="{true}" />
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="hr"><hr /></div>
+						</li>
+						<li>
+							<div class="alignCenter">
+								<button class="save" on:click="{reset}">Reset Profile</button>
+							</div>
+						</li>
+						<li>
+							<div class="hr"><hr /></div>
+						</li>
+					</ul>
 				{/if}
 			</article>
 		</div>

@@ -49,16 +49,8 @@
 
 	$: userAccount = false;
 
-	$: hasTabs = [
-		{
-			name: 'Tokens',
-			path: `/${slug}?tab=Tokens`,
-		},
-		{
-			name: 'NFTs',
-			path: `/${slug}?tab=NFTs`,
-		},
-	];
+	$: hasTabs = [];
+
 	/*
 	hasTabs.push({
 		name: 'Links',
@@ -85,15 +77,54 @@
 
 	let oldslug = slug;
 	function refresh() {
+		console.log('-----------------slug', oldslug, slug, oldslug === slug, userAccount);
 		if (oldslug !== slug) {
 			console.log('.......slug', slug, $sUser.ethAddress, userAccount);
 			userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
+			console.log('.......userAcc', userAccount);
 			if (userAccount) {
+				let userTabs = [];
+				if ($sUser.profile.showTokens) {
+					userTabs.push({
+						name: 'Tokens',
+						path: `/${slug}?tab=Tokens`,
+					});
+					showTokensTabContent = true;
+				}
+				if ($sUser.profile.showNFTs) {
+					userTabs.push({
+						name: 'NFTs',
+						path: `/${slug}?tab=NFTs`,
+					});
+					showNFTsTabContent = true;
+				}
+				if ($sUser.profile.showLinks) {
+					userTabs.push({
+						name: 'Links',
+						path: `/${slug}?tab=Links`,
+					});
+					showLinksTabContent = true;
+				}
+				hasTabs = userTabs;
+
 				tokenList = $sUser.ft;
 				NFTs = $sUser.nft;
 				socialLinks = Object.entries($sUser.profile.socialLinks);
 				loading = false;
 			} else {
+				hasTabs = [
+					{
+						name: 'Tokens',
+						path: `/${slug}?tab=Tokens`,
+					},
+					{
+						name: 'NFTs',
+						path: `/${slug}?tab=NFTs`,
+					},
+				];
+				showTokensTabContent = true;
+				showNFTsTabContent = true;
+				showLinksTabContent = false;
 				if ($sWallet[slug]) {
 					tokenList = $sWallet[slug].ft;
 					NFTs = $sWallet[slug].nft;
@@ -115,25 +146,68 @@
 	let isMounted = false;
 	let loading = true;
 
+	let showTokensTabContent = false;
+	let showNFTsTabContent = false;
+	let showLinksTabContent = false;
 	onMount(async () => {
 		console.log('[onMount][wallet]');
-		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
-			await Moralis.enableWeb3();
-		}
-
 		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
+
 		if (userAccount) {
+			let userTabs = [];
+			if ($sUser.profile.showTokens) {
+				userTabs.push({
+					name: 'Tokens',
+					path: `/${slug}?tab=Tokens`,
+				});
+				showTokensTabContent = true;
+			}
+			if ($sUser.profile.showNFTs) {
+				userTabs.push({
+					name: 'NFTs',
+					path: `/${slug}?tab=NFTs`,
+				});
+				showNFTsTabContent = true;
+			}
+			if ($sUser.profile.showLinks) {
+				userTabs.push({
+					name: 'Links',
+					path: `/${slug}?tab=Links`,
+				});
+				showLinksTabContent = true;
+			}
+			hasTabs = userTabs;
+
 			tokenList = $sUser.ft;
 			NFTs = $sUser.nft;
 			socialLinks = Object.entries($sUser.profile.socialLinks);
 			loading = false;
 		} else {
+			hasTabs = [
+				{
+					name: 'Tokens',
+					path: `/${slug}?tab=Tokens`,
+				},
+				{
+					name: 'NFTs',
+					path: `/${slug}?tab=NFTs`,
+				},
+			];
+
+			showTokensTabContent = true;
+			showNFTsTabContent = true;
+			showLinksTabContent = false;
+
 			if ($sWallet[slug]) {
 				tokenList = $sWallet[slug].ft;
 				NFTs = $sWallet[slug].nft;
 				socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
 				loading = false;
 			}
+		}
+
+		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+			await Moralis.enableWeb3();
 		}
 
 		isMounted = true;
@@ -539,7 +613,7 @@
 						activeTab="{tab}" />
 
 					<div style="width:100%;">
-						{#if tab === 'Tokens'}
+						{#if tab === 'Tokens' && showTokensTabContent}
 							{#if loading && tokenList.length === 0}
 								...loading
 							{:else}
@@ -666,7 +740,7 @@
 									{/if}
 								</div>
 							{/if}
-						{:else if tab === 'NFTs'}
+						{:else if tab === 'NFTs' && showNFTsTabContent}
 							{#if loading && NFTs.length === 0}
 								...loading
 							{:else}
@@ -769,7 +843,7 @@
 									</li>
 								</ul>
 							{/if}
-						{:else if tab === 'Links'}
+						{:else if tab === 'Links' && showLinksTabContent}
 							<ul class="linkList">
 								<li>
 									<img class="overlayIco" width="26" src="/img/ico_youtube.svg" alt="Youtube" />

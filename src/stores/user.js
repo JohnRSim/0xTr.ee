@@ -21,7 +21,10 @@ const setup = {
 			twitter: '',
 			youTube: '',
 			instagram: '',
-		}
+		},
+		showTokens: true,
+		showNFTs: true,
+		showLinks: false,
 	}
 };
 
@@ -104,7 +107,10 @@ function manageUser() {
 							youTube: '',
 							instagram: '',
 						}
-					}
+					},
+					showTokens: true,
+					showNFTs: true,
+					showLinks: false,
 				});
 			}
 			return set({
@@ -122,7 +128,10 @@ function manageUser() {
 						twitter: '',
 						youTube: '',
 						instagram: '',
-					}
+					},
+					showTokens: true,
+					showNFTs: true,
+					showLinks: false,
 				}
 			});
 		},
