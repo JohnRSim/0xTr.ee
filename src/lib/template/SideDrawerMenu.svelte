@@ -184,12 +184,6 @@
 						</li>
 					{/if}
 					<li
-					on:click="{() => {
-						dispatchEvent({ action: 'nav', path: `/voting` });
-					}}">
-					DAO Voting</li>
-					<li class="seperator"></li>
-					<li
 						on:click="{() => {
 							dispatchEvent({ action: 'nav', path: `/voting` });
 						}}">
