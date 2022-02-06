@@ -83,8 +83,12 @@
 	}
 
 	let oldslug = slug;
-	function refresh() {
-		console.log('-----------------slug', oldslug, slug, oldslug === slug, userAccount);
+	let runOnce = true;
+	async function refresh() {
+		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
+		
+		//console.log('-----------------slug', oldslug, slug, oldslug === slug, userAccount);
+		/*
 		if (oldslug !== slug) {
 			console.log('.......slug', slug, $sUser.ethAddress, userAccount);
 			userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
@@ -145,6 +149,135 @@
 			}
 			oldslug = slug;
 		}
+		*/
+		if (runOnce) {
+			runOnce = false;
+
+			if (userAccount) {
+				let userTabs = [];
+				if ($sUser.profile.showTokens) {
+					userTabs.push({
+						name: 'Tokens',
+						path: `/${slug}?tab=Tokens`,
+					});
+					showTokensTabContent = true;
+				}
+				if ($sUser.profile.showNFTs) {
+					userTabs.push({
+						name: 'NFTs',
+						path: `/${slug}?tab=NFTs`,
+					});
+					showNFTsTabContent = true;
+				}
+				if ($sUser.profile.showLinks) {
+					userTabs.push({
+						name: 'Links',
+						path: `/${slug}?tab=Links`,
+					});
+					showLinksTabContent = true;
+				}
+				hasTabs = userTabs;
+
+				tokenList = $sUser.ft;
+				NFTs = $sUser.nft;
+				socialLinks = Object.entries($sUser.profile.socialLinks);
+				loading = false;
+				getUserProfile();
+			} else {
+				hasTabs = [
+					{
+						name: 'Tokens',
+						path: `/${slug}?tab=Tokens`,
+					},
+					{
+						name: 'NFTs',
+						path: `/${slug}?tab=NFTs`,
+					},
+				];
+
+				showTokensTabContent = true;
+				showNFTsTabContent = true;
+				showLinksTabContent = false;
+
+				if ($sWallet[slug]) {
+					tokenList = $sWallet[slug].ft;
+					NFTs = $sWallet[slug].nft;
+					socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
+					loading = false;
+				}
+				//checkAccountExists(slug);
+			}
+
+			
+			if ((window) && ((typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined'))) {
+				await Moralis.enableWeb3();
+			}
+
+			//isMounted = true;
+			updateWallet();
+		} else {
+
+			if (oldslug !== slug) {
+				console.log('.......slug', slug, $sUser.ethAddress, userAccount);
+				userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
+				console.log('.......userAcc', userAccount);
+				if (userAccount) {
+					let userTabs = [];
+					if ($sUser.profile.showTokens) {
+						userTabs.push({
+							name: 'Tokens',
+							path: `/${slug}?tab=Tokens`,
+						});
+						showTokensTabContent = true;
+					}
+					if ($sUser.profile.showNFTs) {
+						userTabs.push({
+							name: 'NFTs',
+							path: `/${slug}?tab=NFTs`,
+						});
+						showNFTsTabContent = true;
+					}
+					if ($sUser.profile.showLinks) {
+						userTabs.push({
+							name: 'Links',
+							path: `/${slug}?tab=Links`,
+						});
+						showLinksTabContent = true;
+					}
+					hasTabs = userTabs;
+
+					tokenList = $sUser.ft;
+					NFTs = $sUser.nft;
+					socialLinks = Object.entries($sUser.profile.socialLinks);
+					loading = false;
+					getUserProfile();
+				} else {
+					hasTabs = [
+						{
+							name: 'Tokens',
+							path: `/${slug}?tab=Tokens`,
+						},
+						{
+							name: 'NFTs',
+							path: `/${slug}?tab=NFTs`,
+						},
+					];
+					showTokensTabContent = true;
+					showNFTsTabContent = true;
+					showLinksTabContent = false;
+					if ($sWallet[slug]) {
+						tokenList = $sWallet[slug].ft;
+						NFTs = $sWallet[slug].nft;
+						socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
+						loading = false;
+					} else {
+						updateWallet();
+					}
+					//checkAccountExists(slug);
+				}
+				oldslug = slug;
+			}
+		}
 	}
 
 	let claimedWallet = true;
@@ -158,72 +291,14 @@
 	let showTokensTabContent = false;
 	let showNFTsTabContent = false;
 	let showLinksTabContent = false;
+	$: if ((isMounted) && ($sApp.ready)) {
+		refresh();
+	}
+
 	onMount(async () => {
 		console.log('[onMount][wallet]');
-
-		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
-
-		if (userAccount) {
-			let userTabs = [];
-			if ($sUser.profile.showTokens) {
-				userTabs.push({
-					name: 'Tokens',
-					path: `/${slug}?tab=Tokens`,
-				});
-				showTokensTabContent = true;
-			}
-			if ($sUser.profile.showNFTs) {
-				userTabs.push({
-					name: 'NFTs',
-					path: `/${slug}?tab=NFTs`,
-				});
-				showNFTsTabContent = true;
-			}
-			if ($sUser.profile.showLinks) {
-				userTabs.push({
-					name: 'Links',
-					path: `/${slug}?tab=Links`,
-				});
-				showLinksTabContent = true;
-			}
-			hasTabs = userTabs;
-
-			tokenList = $sUser.ft;
-			NFTs = $sUser.nft;
-			socialLinks = Object.entries($sUser.profile.socialLinks);
-			loading = false;
-			getUserProfile();
-		} else {
-			hasTabs = [
-				{
-					name: 'Tokens',
-					path: `/${slug}?tab=Tokens`,
-				},
-				{
-					name: 'NFTs',
-					path: `/${slug}?tab=NFTs`,
-				},
-			];
-
-			showTokensTabContent = true;
-			showNFTsTabContent = true;
-			showLinksTabContent = false;
-
-			if ($sWallet[slug]) {
-				tokenList = $sWallet[slug].ft;
-				NFTs = $sWallet[slug].nft;
-				socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
-				loading = false;
-			}
-			//checkAccountExists(slug);
-		}
-
-		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
-			await Moralis.enableWeb3();
-		}
-
 		isMounted = true;
-		updateWallet();
+
 
 	});
 
