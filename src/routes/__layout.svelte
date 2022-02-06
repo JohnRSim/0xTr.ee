@@ -141,6 +141,7 @@
 	let linkTitle = '';
 	let linkDescription = '';
 	let linkURL = '';
+	let activeNFT = false;
 
 	//used for modal window input text fields
 	let keyboardShown = false;
@@ -1031,6 +1032,7 @@
 	 */
 	function closeWindow() {
 		showModal = 'false';
+		activeNFT = false;
 		//showSocialModal = 'false';
 	}
 	/**
@@ -1246,6 +1248,7 @@
 		padding: 10px;
 		min-width: 90px;
 		text-align: center;
+		transition: box-shadow 0.2s;
 	}
 	.grid figcaption {
 		font-weight: bold;
@@ -1268,6 +1271,7 @@
 		border-radius: 20px;
 		padding: 5px;
 		margin: 0px !important;
+		transition: background 0.2s;
 	}
 	.grid .active {
 		background: #f0f0f0 !important;
@@ -1753,10 +1757,12 @@
 	{#if modalTpl === 'selectNFT' || modalTpl === 'selectBGNFT'}
 		<ul class="grid">
 			{#if $sUser.nft && $sUser.nft.length > 0}
-				{#each $sUser.nft as NFT}
+				{#each $sUser.nft as NFT, i}
 					{#if NFT.metadata}
 						<li
+							class:active="{activeNFT === i}"
 							on:click="{() => {
+								activeNFT = i;
 								if (modalTpl === 'selectNFT') {
 									addToProfile(NFT.metadata.image);
 								} else {

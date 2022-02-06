@@ -494,6 +494,12 @@
 		background-repeat: no-repeat;
 		background-size: 20px;
 	}
+	select {
+		border-radius: 100px;
+		border: solid 4px #f5f7f5;
+		background: #fff;
+		padding: 4px 12px;
+	}
 </style>
 
 {#if isMounted}

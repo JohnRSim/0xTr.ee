@@ -558,6 +558,9 @@
 		background-repeat: no-repeat;
 		background-position: center;
 	}
+	.bio {
+		margin: 0px;
+	}
 </style>
 
 {#if isMounted}
