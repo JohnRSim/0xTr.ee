@@ -44,6 +44,7 @@
 	import { modal as sModal } from '../../stores/modal.js';
 	import { user as sUser } from '../../stores/user';
 	import { wallet as sWallet } from '../../stores/wallet';
+	import { keys } from 'object-hash';
 
 	export let tab, slug;
 
@@ -853,6 +854,78 @@
 							{/if}
 						{:else if tab === 'Links' && showLinksTabContent}
 							<ul class="linkList">
+								{#each Object.keys($sUser.links) as link}
+									{#if $sUser.links[link].tpl === 'simple'}
+										<li
+											on:click="{() => {
+												goto($sUser.links[link].url);
+											}}">
+											<dl>
+												<dt class="mini">
+													{#if $sUser.links[link].url.includes('youtube')}
+														<img width="26" src="/img/ico_youtube.svg" alt="Youtube" />
+													{/if}
+													{#if $sUser.links[link].url.includes('twitter')}
+														<img width="26" src="/img/ico_twitter.svg" alt="twitter" />
+													{/if}
+													{#if $sUser.links[link].url.includes('instagram')}
+														<img width="26" src="/img/ico_instagram.svg" alt="instagram" />
+													{/if}
+												</dt>
+												<dd>{$sUser.links[link].title}</dd>
+											</dl>
+										</li>
+									{/if}
+									{#if $sUser.links[link].tpl === 'description'}
+										<li
+											on:click="{() => {
+												goto($sUser.links[link].url);
+											}}">
+											{#if $sUser.links[link].url.includes('youtube')}
+												<img
+													class="overlayIco"
+													width="26"
+													src="/img/ico_youtube.svg"
+													alt="Youtube" />
+											{/if}
+											{#if $sUser.links[link].url.includes('twitter')}
+												<img
+													class="overlayIco"
+													width="26"
+													src="/img/ico_twitter.svg"
+													alt="twitter" />
+											{/if}
+											{#if $sUser.links[link].url.includes('instagram')}
+												<img
+													class="overlayIco"
+													width="26"
+													src="/img/ico_instagram.svg"
+													alt="instagram" />
+											{/if}
+											<dl>
+												<dt class="mini">
+													<img width="100" src="/tmp/example.png" alt="Youtube" />
+												</dt>
+												<dd>
+													<div>
+														{$sUser.links[link].title}<br />
+														<p>{$sUser.links[link].description}</p>
+													</div>
+												</dd>
+											</dl>
+										</li>
+									{/if}
+									{#if $sUser.links[link].tpl === 'gallery'}
+										<li
+											on:click="{() => {
+												goto($sUser.links[link].url);
+											}}">
+											WIP<br />
+											{$sUser.links[link].title}
+										</li>
+									{/if}
+								{/each}
+								<!--
 								<li>
 									<img class="overlayIco" width="26" src="/img/ico_youtube.svg" alt="Youtube" />
 									<dl>
@@ -890,7 +963,7 @@
 										</dt>
 										<dd>The Imperial Collection</dd>
 									</dl>
-								</li>
+								</li>-->
 							</ul>
 						{/if}
 					</div>

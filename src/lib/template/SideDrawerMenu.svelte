@@ -165,6 +165,13 @@
 							}}">
 							My Wallet
 						</li>
+					{:else}
+						<li
+							on:click="{() => {
+								dispatchEvent({ action: 'nav', path: `/login` });
+							}}">
+							Login
+						</li>
 					{/if}
 					<li
 						on:click="{() => {

@@ -159,6 +159,13 @@
 		userProfile[toggleName] = val;
 		sUser.updateVal('profile', userProfile);
 	}
+	/**
+	 * removeLink
+	 */
+	function removeLink(linkTitle) {
+		const key = linkTitle.replace(/ /g, '_');
+		sUser.removeLink(key);
+	}
 </script>
 
 <style>
@@ -433,6 +440,60 @@
 		align-items: center;
 		justify-content: center;
 	}
+
+	.linkList {
+		margin: 20px 0px 0px 0px;
+	}
+	.linkList li {
+		list-style: none;
+		border-radius: 16px;
+		border: solid 4px #f9fafc;
+		padding: 10px;
+		margin-bottom: 16px;
+		position: relative;
+	}
+
+	.linkList li .overlayIco {
+		position: absolute;
+		z-index: 5;
+		top: 10px;
+		right: 10px;
+	}
+	.linkList li dl {
+		margin: 0px;
+		display: flex;
+	}
+	.linkList li dl dt {
+		display: flex;
+		align-items: center;
+	}
+	.linkList li dl dd {
+		display: flex;
+		align-items: center;
+		margin-left: 10px;
+		font-weight: bold;
+		font-size: 1.2em;
+	}
+	.linkList p {
+		font-size: 0.75em;
+	}
+	.removeLink {
+		width: 30px;
+		height: 30px;
+		display: block;
+		position: absolute;
+		top: -15px;
+		left: -15px;
+		border-radius: 50%;
+		border-radius: 100px;
+		border: solid 4px #f5f7f5;
+		background: #fff;
+		padding: 4px 12px;
+		background-image: url('/img/ico_close.svg');
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: 20px;
+	}
 </style>
 
 {#if isMounted}
@@ -602,6 +663,87 @@
 							</dt>
 							<dd>Create Network Category</dd>
 						</dl>
+
+						<ul class="linkList">
+							{#each Object.keys($sUser.links) as link}
+								{#if $sUser.links[link].tpl === 'simple'}
+									<li
+										on:click="{() => {
+											goto($sUser.links[link].url);
+										}}">
+										<i
+											class="removeLink"
+											on:click|stopPropagation="{() => {
+												removeLink($sUser.links[link].title);
+											}}"></i>
+										<dl>
+											<dt class="mini">
+												{#if $sUser.links[link].url.includes('youtube')}
+													<img width="26" src="/img/ico_youtube.svg" alt="Youtube" />
+												{/if}
+												{#if $sUser.links[link].url.includes('twitter')}
+													<img width="26" src="/img/ico_twitter.svg" alt="twitter" />
+												{/if}
+												{#if $sUser.links[link].url.includes('instagram')}
+													<img width="26" src="/img/ico_instagram.svg" alt="instagram" />
+												{/if}
+											</dt>
+											<dd>{$sUser.links[link].title}</dd>
+										</dl>
+									</li>
+								{/if}
+								{#if $sUser.links[link].tpl === 'description'}
+									<li
+										on:click="{() => {
+											goto($sUser.links[link].url);
+										}}">
+										<i
+											class="removeLink"
+											on:click|stopPropagation="{() => {
+												removeLink($sUser.links[link].title);
+											}}"></i>
+										{#if $sUser.links[link].url.includes('youtube')}
+											<img class="overlayIco" width="26" src="/img/ico_youtube.svg" alt="Youtube" />
+										{/if}
+										{#if $sUser.links[link].url.includes('twitter')}
+											<img class="overlayIco" width="26" src="/img/ico_twitter.svg" alt="twitter" />
+										{/if}
+										{#if $sUser.links[link].url.includes('instagram')}
+											<img
+												class="overlayIco"
+												width="26"
+												src="/img/ico_instagram.svg"
+												alt="instagram" />
+										{/if}
+										<dl>
+											<dt class="mini">
+												<img width="100" src="/tmp/example.png" alt="Youtube" />
+											</dt>
+											<dd>
+												<div>
+													{$sUser.links[link].title}<br />
+													<p>{$sUser.links[link].description}</p>
+												</div>
+											</dd>
+										</dl>
+									</li>
+								{/if}
+								{#if $sUser.links[link].tpl === 'gallery'}
+									<li
+										on:click="{() => {
+											goto($sUser.links[link].url);
+										}}">
+										<i
+											class="removeLink"
+											on:click|stopPropagation="{() => {
+												removeLink($sUser.links[link].title);
+											}}"></i>
+										WIP<br />
+										{$sUser.links[link].title}
+									</li>
+								{/if}
+							{/each}
+						</ul>
 					</div>
 				{:else if tab === 'Settings'}
 					<ul class="colSettings">

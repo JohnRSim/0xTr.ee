@@ -138,6 +138,10 @@
 
 	//link tpl
 	let activeLinkTpl = '';
+	let linkTitle = '';
+	let linkDescription = '';
+	let linkURL = '';
+
 	//used for modal window input text fields
 	let keyboardShown = false;
 
@@ -1052,9 +1056,9 @@
 		console.log('adding links');
 		let updateLinks = $sUser.profile;
 		updateLinks.socialLinks = {
-			twitter: socialTwitterLink,
-			youTube: socialYouTubeLink,
-			instagram: socialInstagramLink,
+			twitter: `https://twitter.com/${socialTwitterLink}`,
+			youTube: `https://www.youtube.com/c/${socialYouTubeLink}`,
+			instagram: `https://www.instagram.com/${socialInstagramLink.replace(/@/g, '')}`,
 		};
 		sUser.updateVal('profile', updateLinks);
 		closeSocialWindow();
@@ -1176,6 +1180,32 @@
 			action: 'closeWindow',
 		},
 	];*/
+
+	/**
+	 * addLink
+	 */
+	function addLink() {
+		console.log('[addLink]');
+
+		const key = linkTitle.replace(/ /g, '_');
+		sUser.addLink(key, {
+			tpl: activeLinkTpl,
+			title: linkTitle,
+			description: linkDescription,
+			url: linkURL,
+			nftImg: '',
+		});
+		let userProfile = $sUser.profile;
+		userProfile['showLinks'] = true;
+		sUser.updateVal('profile', userProfile);
+
+		activeLinkTpl = '';
+		linkTitle = '';
+		linkDescription = '';
+		linkURL = '';
+
+		closeSocialWindow();
+	}
 
 	let userAvatar =
 		'background-image:url("/assets/images/best-medium-format-camera-for-starting-out.jpg")';
@@ -1505,9 +1535,7 @@
 <AddSocialLinks
 	on:closeWindow="{closeSocialWindow}"
 	on:saveSocialLinks="{saveSocialLinks}"
-	on:addLink="{() => {
-		closeSocialWindow();
-	}}"
+	on:addLink="{addLink}"
 	on:addDetail="{() => {
 		socialModalTpl = 'addDetail';
 		socialModalButtons = [
@@ -1527,7 +1555,7 @@
 					<img width="26" src="/img/ico_twitter.svg" alt="Matic" />
 				</div>
 				<div>
-					<input bind:value="{socialTwitterLink}" id="twitter" placeholder="Twitter" />
+					<input bind:value="{socialTwitterLink}" id="twitter" placeholder="@Twitter" />
 				</div>
 			</label>
 
@@ -1535,7 +1563,9 @@
 				<div style="display:flex; padding:10px;align-items:center;">
 					<img width="26" src="/img/ico_youtube.svg" alt="Matic" />
 				</div>
-				<div><input bind:value="{socialYouTubeLink}" id="YouTube" placeholder="YouTube" /></div>
+				<div>
+					<input bind:value="{socialYouTubeLink}" id="YouTube" placeholder="YouTube Channel Name" />
+				</div>
 			</label>
 
 			<label for="instagram">
@@ -1543,7 +1573,7 @@
 					<img width="26" src="/img/ico_instagram.svg" alt="Instagram" />
 				</div>
 				<div>
-					<input bind:value="{socialInstagramLink}" id="instagram" placeholder="Instagram" />
+					<input bind:value="{socialInstagramLink}" id="instagram" placeholder="@Instagram" />
 				</div>
 			</label>
 		</form>
@@ -1607,58 +1637,60 @@
 			<h4>Create link</h4>
 			<p>Update the following fields:</p>
 		</div>
-
 		<form>
 			<label for="title">
-				<input id="title" placeholder="Title *" />
+				<input bind:value="{linkTitle}" id="title" placeholder="Title *" />
 			</label>
-			<div style="width:100%;padding:0px 20px;">
-				<dl
-					class="createOption"
-					on:click="{() => {
-						sSocialModal.showModal({
-							enable: 'true',
-							title: '',
-							tpl: 'createNetwork',
-							buttons: [
-								{
-									text: 'Add Detail',
-									action: 'addDetail',
-								},
-							],
-						});
-					}}">
-					<dt>
-						<img width="26" src="/img/ico_edit_main.svg" alt="Create" />
-					</dt>
-					<dd
-						on:click|stopPropagation="{() => {
-							sModal.showModal({
+			{#if activeLinkTpl === 'description'}
+				<div style="width:100%;padding:0px 20px;">
+					<dl
+						class="createOption"
+						on:click="{() => {
+							sSocialModal.showModal({
 								enable: 'true',
-								title: 'Choose A Placeholder NFT',
-								tpl: 'selectNFT',
-								notch: true,
-								hasShadow: true,
-								subHeader: 'This NFT will be displayed as part of your link.',
+								title: '',
+								tpl: 'createNetwork',
 								buttons: [
 									{
-										text: 'Confirm',
-										action: 'closeWindow',
+										text: 'Add Detail',
+										action: 'addDetail',
 									},
 								],
 							});
 						}}">
-						Add NFT Image
-					</dd>
-				</dl>
-			</div>
+						<dt>
+							<img width="26" src="/img/ico_edit_main.svg" alt="Create" />
+						</dt>
+						<dd
+							on:click|stopPropagation="{() => {
+								sModal.showModal({
+									enable: 'true',
+									title: 'Choose A Placeholder NFT',
+									tpl: 'selectNFT',
+									notch: true,
+									hasShadow: true,
+									subHeader: 'This NFT will be displayed as part of your link.',
+									buttons: [
+										{
+											text: 'Confirm',
+											action: 'closeWindow',
+										},
+									],
+								});
+							}}">
+							Add NFT Image
+						</dd>
+					</dl>
+				</div>
 
-			<label for="description">
-				<textarea id="description" placeholder="Description"></textarea>
-			</label>
+				<label for="description">
+					<textarea bind:value="{linkDescription}" id="description" placeholder="Description"
+					></textarea>
+				</label>
+			{/if}
 
 			<label for="linkURL">
-				<input id="instagram" placeholder="link URL *" />
+				<input bind:value="{linkURL}" id="linkURL" placeholder="link URL *" />
 			</label>
 		</form>
 	{/if}
