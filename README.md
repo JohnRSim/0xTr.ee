@@ -8,8 +8,8 @@ https://github.com/JohnRSim/0xtr.ee-Contracts
 
 # Demo Site
 https://0xtr.ee <br/>
-Also built and deployed to moralis<br/>
-Also deployed to moralis - https://lzf1jh5sx176.usemoralis.com/
+Also built and deployed to moralis as dAPP<br/>
+https://lzf1jh5sx176.usemoralis.com/
 
 https://user-images.githubusercontent.com/364208/152705255-1cb3bd85-7df3-4664-bcb2-bc6b490fe914.mp4
 
