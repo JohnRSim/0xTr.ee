@@ -6,17 +6,45 @@
 	<link rel="icon" href="/favicon.png" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="manifest" crossorigin="use-credentials" href="/manifest.json" />
-	
+
 	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.7.0/dist/web3.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@web3auth/web3auth@0.2.2/dist/web3auth.umd.min.js"></script>
 	<script src="https://unpkg.com/moralis/dist/moralis.js"></script>
 
+	<style>
+		
+	#mobileOnly {
+		display:none;
+		color:#000;
+		font-size:1.6em;
+		padding:40px;
+	}
+	/* Medium devices (landscape tablets, 768px and up) */
+	@media only screen and (min-width: 768px) {
+		#svelte {
+			display: none;
+		}
+		#mobileOnly {
+			display:block;
+		}
+	}
+	</style>
 	%svelte.head%
 </head>
 
 <body>
 	<div id="svelte">%svelte.body%</div>
+	<div id="mobileOnly">
+		<img src="/logo_group.svg" alt="0xtr.ee" />
+		<p>Please Launch this app in a mobile device or decrease your browser size to tablet form 768px</p>
+		<p>
+			For a video intro <a href="https://showcase.ethglobal.com/roadtoweb3/0xtree" target="_blank">check out our submission here</a>
+		</p>
+		<p>
+			Behind the scenes code can be found here <a href="https://github.com/JohnRSim/0xTr.ee" target="_blank">check out our submission here</a>
+		</p>
+	</div>
 </body>
 
 </html>
