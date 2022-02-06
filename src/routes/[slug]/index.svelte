@@ -151,6 +151,7 @@
 	let showLinksTabContent = false;
 	onMount(async () => {
 		console.log('[onMount][wallet]');
+
 		userAccount = $sUser.ethAddress.length > 0 && slug === $sUser.ethAddress;
 
 		if (userAccount) {
@@ -309,7 +310,10 @@
 		text-transform: uppercase;
 		letter-spacing: 1px;
 	}
-
+	.tokenList img {
+		display: block;
+		margin: 0px auto;
+	}
 	.hr {
 		background: #f9fafc;
 		border-radius: 100px;
@@ -625,12 +629,16 @@
 													<figure>
 														{#if token.logo}
 															<img width="20" src="{token.logo}" alt="{token.name}" />
+														{:else}
+															<img width="40" src="/icon.svg" alt="{token.name}" />
 														{/if}
 														<figcaption>{token.symbol}</figcaption>
 													</figure>
 												</dt>
 												<dd>
-													{token.balance}<br />
+													{#if window && window._ethers}
+														{window._ethers.utils.formatEther(token.balance)}<br />
+													{/if}
 													{token.name}
 												</dd>
 											</dl>
