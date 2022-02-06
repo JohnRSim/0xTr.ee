@@ -12,6 +12,7 @@ const setup = {
 	webpSupport: true,
 	lockScroll: false,
 	disablePullToRefresh: false,
+	ready: false,
 };
 
 /**

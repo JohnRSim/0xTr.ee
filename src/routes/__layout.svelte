@@ -180,16 +180,18 @@
 	 **/
 	onMount(async () => {
 		console.info('%c[Layout][Mount]', Inf);
-
+		sApp.updateVal('ready',false);
 		//page ready show DOM
 		isMounted = true;
+		
 
 		//connect to moralis
 		await Moralis.start({ serverUrl, appId });
 		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
 			await Moralis.enableWeb3();
 		}
-
+		sApp.updateVal('ready',true);
+		
 		/*Moralis.settings.setAPIRateLimit({
 			anonymous: 50,
 			authenticated: 1000,

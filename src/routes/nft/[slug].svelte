@@ -60,6 +60,7 @@
 	import { modal as sModal } from '../../stores/modal.js';
 	import { bidding as sBidding } from '../../stores/bidding.js';
 	import { user as sUser } from '../../stores/user.js';
+	import { app as sApp } from '../../stores/app.js';
 
 	export let tab, slug;
 
@@ -81,6 +82,7 @@
 	$: owner = '';
 	$: nftImage = nftMeta.image ? `background-image:url("${nftMeta.image}")` : '';
 	$: activity = [];
+	$: bids = [];
 
 	$: if ($sBidding.waitingTransaction === $sBidding.tokenId) {
 		updatingBid = true;
@@ -114,8 +116,17 @@
 	let web3Browser = false;
 	$: latestBid = false;
 	const addressArr = slug.split('_');
+	let isMounted = false;
+
+	$: if ((isMounted) && ($sApp.ready)) {
+		refresh();
+	}
 
 	onMount(async () => {
+		isMounted = true;
+	});
+
+	async function refresh() {
 		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
 			await Moralis.enableWeb3();
 		}
@@ -143,7 +154,8 @@
 		} else {
 			web3Browser = false;
 		}
-	});
+		getBids();
+	}
 
 	/**
 	 * getLatestBid
@@ -253,7 +265,7 @@
 	/**
 	 * bids
 	 */
-	async function bids() {
+	async function bidsxOLD() {
 		console.log('[bids]');
 		//const web3 = await Moralis.enableWeb3();//do I need this?...
 		const ethers = Moralis.web3Library;
@@ -269,6 +281,25 @@
 
 		const getBids = await Moralis.executeFunction(options);
 		console.log('[getBids]', getBids);
+	}
+
+	/**
+	 * getBids
+	 */
+	 async function getBids() {
+		console.log('[getBids]');
+		let params = {
+			nftContract:addressArr[0],
+			tokenId:addressArr[1],
+		};
+		params = {
+			nftContract:'0x2953399124f0cbb46d2cbacd8a89cf0599974963',
+			tokenId:'13881000456214464272594247052417607500385614301131248520949923275583315247105'
+		}
+		let res = await Moralis.Cloud.run('getBids',params)
+
+		console.log('[getBids]',res[0].attributes);
+		bids = [res[0].attributes];
 	}
 
 	/**
@@ -585,6 +616,7 @@
 				<br />
 				<!--<button on:click="{bids}">bids</button>-->
 			</header>
+			
 			<HeaderTabList
 				on:tab="{(e) => {
 					goto(e.detail.path, { replaceState: true, noscroll: true });
@@ -594,7 +626,19 @@
 
 			<div style="width:100%; padding:0px 20px;">
 				{#if tab === 'Offers'}
-					Offers
+					{#if (bids) && (bids.length > 0)}
+						{#each bids as bid}
+						<div style="flex">
+							<div>{bid.bidder}</div>
+							<div>
+								{#if window && window._ethers}
+									{window._ethers.utils.formatEther(bid.price)} MATIC<br />
+								{/if}
+							</div>
+						</div>
+							
+						{/each}
+					{/if}
 				{:else if tab === 'History'}
 					History
 				{:else if tab === 'Activity'}
