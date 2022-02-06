@@ -15,7 +15,7 @@ https://user-images.githubusercontent.com/364208/152705264-15f40b66-f4d0-4b1b-8a
 Click through app demo
 
 <img width="314" alt="ssoCapture" src="https://user-images.githubusercontent.com/364208/152705297-5c19ac5b-4f99-4c43-b389-2d7c1392f550.PNG">
-
+web3auth integration 
 
 # Introducing 0xTree
 0xTree connects your social accounts to your NFT wallet enabling friends and collectors to browse, bid and buy your NFT’s without releasing custody.
