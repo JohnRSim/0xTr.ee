@@ -1059,9 +1059,9 @@
 		console.log('adding links');
 		let updateLinks = $sUser.profile;
 		updateLinks.socialLinks = {
-			twitter: `https://twitter.com/${socialTwitterLink}`,
-			youTube: `https://www.youtube.com/c/${socialYouTubeLink}`,
-			instagram: `https://www.instagram.com/${socialInstagramLink.replace(/@/g, '')}`,
+			twitter: (socialTwitterLink.length > 0)?`https://twitter.com/${socialTwitterLink}`:'',
+			youTube: (socialYouTubeLink.length > 0)?`https://www.youtube.com/c/${socialYouTubeLink}`:'',
+			instagram: (socialInstagramLink.length > 0)?`https://www.instagram.com/${socialInstagramLink.replace(/@/g, '')}`:'',
 		};
 		sUser.updateVal('profile', updateLinks);
 		closeSocialWindow();

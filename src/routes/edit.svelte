@@ -75,6 +75,9 @@
 		? `background-image:url("${$sUser.profile.profileBGPic}"); background-size:cover;`
 		: '';
 
+	$: if ($sUser) {
+		updateUserProfile();
+	}
 	//userAvatar = '';
 
 	//profile info
@@ -166,6 +169,18 @@
 		const key = linkTitle.replace(/ /g, '_');
 		sUser.removeLink(key);
 	}
+	
+	/**
+	 * updateUserProfile
+	 */
+	async function updateUserProfile() {
+		console.log('[updateUserProfile]',$sUser.profile)
+		let params = {};
+		let res = await Moralis.Cloud.run('updateUserProfile',{profile:$sUser.profile})
+
+		console.log('[updateUserProfile]',res);
+	}
+
 </script>
 
 <style>

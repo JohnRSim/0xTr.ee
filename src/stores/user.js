@@ -7,6 +7,7 @@ const appConfig = { instance: 'DEV' }
  * Store Framework
  */
 const setup = {
+	hasProfileFromDB:false,
 	disablePanelScroll: false,
 	userInfo: {},
 	ethAddress: '',

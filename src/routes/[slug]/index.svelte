@@ -118,6 +118,7 @@
 				NFTs = $sUser.nft;
 				socialLinks = Object.entries($sUser.profile.socialLinks);
 				loading = false;
+				getUserProfile();
 			} else {
 				hasTabs = [
 					{
@@ -140,6 +141,7 @@
 				} else {
 					updateWallet();
 				}
+				//checkAccountExists(slug);
 			}
 			oldslug = slug;
 		}
@@ -190,6 +192,7 @@
 			NFTs = $sUser.nft;
 			socialLinks = Object.entries($sUser.profile.socialLinks);
 			loading = false;
+			getUserProfile();
 		} else {
 			hasTabs = [
 				{
@@ -212,6 +215,7 @@
 				socialLinks = Object.entries($sWallet[slug].profile.socialLinks);
 				loading = false;
 			}
+			//checkAccountExists(slug);
 		}
 
 		if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
@@ -220,8 +224,32 @@
 
 		isMounted = true;
 		updateWallet();
+
 	});
 
+	/**
+	 * checkAccountExists
+	 */
+	async function checkAccountExists(test) {
+		console.log('[checkAccountExists]',test)
+		//console.log(`'${slug}'`, `'${$sUser.ethAddress}'`)
+		//console.log('0x123e710c69b6806ef32Cf52e49dCC5EEEc368a22' === slug)
+		let params = {ethAddress: '0x123e710c69b6806ef32cf52e49dcc5eeec368a22'};
+		//console.log(params,'x1')
+		console.log('test',test)
+		console.log('test',test+'')
+		params = {ethAddress: test};
+		//params = {ethAddress: '0x123e710c69b6806ef32cf52e49dcc5eeec368a22'};
+		let res = await Moralis.Cloud.run('checkAddress',params)
+		//console.log(params,'x2');
+		
+		console.log('[checkAccountExists]',res)
+		return (res.length > 0);
+	}
+
+	/**
+	 * updateWallet
+	 */
 	async function updateWallet() {
 		let grabNFTs = {};
 		if (userAccount) {
@@ -333,6 +361,45 @@
 				});
 		}
 	}
+
+	async function updateUsertest() {
+		console.log('testuser')
+		
+		let params = {ethAddress: slug};
+		//params = {ethAddress: '0x123e710c69b6806ef32cf52e49dcc5eeec368a22'};
+		let res = await Moralis.Cloud.run('updateUser2',params)
+		//console.log(params,'x2');
+		
+		console.log('[checkAccountExists]',res)
+	}
+
+	/**
+	 * get user profile object
+	 */
+	async function getUserProfile() {
+		if (!$sUser.hasProfileFromDB) {
+			let params = {};
+			let res = await Moralis.Cloud.run('getProfile',params);
+
+			console.log('[getUserProfile]',res)
+			if ((res) && (Object.keys(res).length > 5)) {//hack
+				sUser.updateVal('profile',res);
+				sUser.updateVal('hasProfileFromDB',true);
+			}
+		}
+	}
+	/*
+	Moralis.Cloud.define("generateSpecialData", async (request) => {
+    if (!request.user.get("specialData")) {
+        request.user.set("specialData", "0x0000000000000000000000000000000000000000");
+        await request.user.save({useMasterKey: true});
+        return request.user;
+    }
+    return 2;
+}, {
+    requireUser: true,
+    useMasterKey: true
+});*/
 </script>
 
 <style>
@@ -665,18 +732,18 @@
 							<button on:click="{claimWallet}" class="claimWallet">Claim this Wallet</button>
 						{:else}
 							<ul class="floatingLinks">
-								{#each socialLinks as [site, url], i}
-									{#if url}
-										<li>
-											<a target="_blank" href="{url}">
-												<img
-													style="display:block;"
-													width="26"
-													src="/img/ico_{site}.svg"
-													alt="{site}" /></a>
-										</li>
-									{/if}
-								{/each}
+									{#each Object.entries($sUser.profile.socialLinks) as [site, url], i}
+										{#if url}
+											<li>
+												<a target="_blank" href="{url}">
+													<img
+														style="display:block;"
+														width="26"
+														src="/img/ico_{site}.svg"
+														alt="{site}" /></a>
+											</li>
+										{/if}
+									{/each}
 							</ul>
 						{/if}
 						<b>{$sUser.profile.name ? $sUser.profile.name : 'Anonymous Wallet'}</b>
