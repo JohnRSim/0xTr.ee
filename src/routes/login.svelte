@@ -22,7 +22,31 @@
 	//stores
 	import { user as sUser } from '../stores/user';
 
-	/* Authentication code */
+
+	//let web3AuthInstance = null;
+	onMount(async() => {
+		/*
+		const polygonMumbaiConfig = {
+			chainNamespace: "eip155",
+			rpcTarget: "https://rpc-mumbai.maticvigil.com",
+			blockExplorer: "https://mumbai-explorer.matic.today",
+			chainId: "0x13881",
+			displayName: "Polygon Mumbai Testnet",
+			ticker: "matic",
+			tickerName: "matic",
+		};
+		const web3authSdk = window.Web3auth;
+
+		web3AuthInstance = new web3authSdk.Web3Auth({
+			chainConfig: polygonMumbaiConfig,
+			clientId: "BMY_C-OsMtW4rJTqqpsygsbOxcpUMQ1jsGQXtXMN2CP4coUsZctqVBOTVw3QAbKCguFxqyxU15vRU7VsA-frDVI" // get your clientId from https://developer.web3auth.io
+		});
+		//subscribeAuthEvents(web3AuthInstance);
+		await web3AuthInstance.initModal();
+		*/
+	});
+
+	/* Auth Direct Moralis*/
 	async function login() {
 		let user = Moralis.User.current();
 		if (!user) {
@@ -44,45 +68,51 @@
 		}
 	}
 
-	let web3AuthInstance = null;
-	onMount(async() => {
-		const polygonMumbaiConfig = {
-			chainNamespace: "eip155",
-			rpcTarget: "https://rpc-mumbai.maticvigil.com",
-			blockExplorer: "https://mumbai-explorer.matic.today",
-			chainId: "0x13881",
-			displayName: "Polygon Mumbai Testnet",
-			ticker: "matic",
-			tickerName: "matic",
-		};
-		const web3authSdk = window.Web3auth;
-
-		web3AuthInstance = new web3authSdk.Web3Auth({
-			chainConfig: polygonMumbaiConfig,
-			clientId: "BMY_C-OsMtW4rJTqqpsygsbOxcpUMQ1jsGQXtXMN2CP4coUsZctqVBOTVw3QAbKCguFxqyxU15vRU7VsA-frDVI" // get your clientId from https://developer.web3auth.io
-		});
-		//subscribeAuthEvents(web3AuthInstance);
-		await web3AuthInstance.initModal();
-	});
-
 	/**
-	 * web3Auth Jim do you stuff here :)
+	 * web3Auth And Moralis
 	 */
-	async function jimsMagic() {
-		console.log('....jimsMagic')
+	async function moralisWeb3Auth() {
+
+		let user = Moralis.User.current();
+		if (!user) {
+			user = await Moralis.authenticate({ 
+				provider: 'web3Auth',
+				clientId: 'BMY_C-OsMtW4rJTqqpsygsbOxcpUMQ1jsGQXtXMN2CP4coUsZctqVBOTVw3QAbKCguFxqyxU15vRU7VsA-frDVI',
+				chainId: Moralis.Chains.MUMBAI,
+				theme: 'light',
+				appLogo: '/icon.svg',
+				loginMethodsOrder: ["google", "facebook", "twitter", "reddit", "discord", "twitch", "apple", "line", "github", "kakao", "linkedin", "weibo", "wechat", "email_passwordless"]
+			 })
+				.then(function (user) {
+					console.log('logged in user:', user);
+					console.log(user.get('ethAddress'));
+					sUser.updateVal('userInfo', user);
+					sUser.updateVal('ethAddress', user.attributes.ethAddress);
+					goto(`/${user.attributes.ethAddress}`);
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		} else {
+			sUser.updateVal('userInfo', user);
+			sUser.updateVal('ethAddress', user.attributes.ethAddress);
+			goto(`/${user.attributes.ethAddress}`);
+		}
+		
+		/*
 		const provider = await web3AuthInstance.connect()
-		console.log('...huh',provider );
+		console.log('[provider]',provider );
 		
         const user = await web3AuthInstance.getUserInfo();
-		console.log(user);
+		console.log('[user]',user);
 		const web3 = new Web3(web3AuthInstance.provider);
       	const address = (await web3.eth.getAccounts())[0];
       	//const balance = await web3.eth.getBalance(address);
-		  
+		  */
 		
-		sUser.updateVal('userInfo', user);
-		sUser.updateVal('ethAddress', address);
-		goto(`/${address}`);
+		//sUser.updateVal('userInfo', user);
+		//sUser.updateVal('ethAddress', address);
+		//goto(`/${address}`);
 		//this updates the user profile eth address
 		//window.open("https://metamask.io"); 
 		/*
@@ -268,7 +298,7 @@
 
 				<div id="XT-create">
 					<img src="/img/ico_socialcons.svg" alt="" />
-					<Button {...basic} on:click="{jimsMagic}">Create wallet</Button>
+					<Button {...basic} on:click="{moralisWeb3Auth}">Create wallet</Button>
 				</div>
 
 				<footer>
